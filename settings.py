@@ -28,8 +28,8 @@ SESSION_FIELDS = []
 # rooms
 ROOMS = [
     dict(
-        name='studyRoom1',
-        display_name='Study Room 1',
+        name='chatai',
+        display_name='AI Chatbot Study',
     ),
     # dict(
     #     name='chat_japanese_room',
