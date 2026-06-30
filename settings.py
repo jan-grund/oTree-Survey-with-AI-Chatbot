@@ -30,6 +30,9 @@ ROOMS = [
     dict(
         name='chatai',
         display_name='AI Chatbot Study',
+        # Captures Prolific's PROLIFIC_PID/STUDY_ID/SESSION_ID URL params before
+        # oTree's room redirect chain strips them; see _templates/prolific_room_welcome.html
+        welcome_page='prolific_room_welcome.html',
     ),
     # dict(
     #     name='chat_japanese_room',

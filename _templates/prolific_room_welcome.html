@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome</title>
+<noscript><meta http-equiv="refresh" content="0;url=?welcome_page_ok=1"></noscript>
+<style>
+body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f7f7f8}
+.box{max-width:420px;text-align:center;padding:2rem}
+.btn{display:inline-block;margin-top:1rem;padding:.6rem 1.4rem;background:#2d3748;color:#fff;border:none;border-radius:6px;font-size:1rem;cursor:pointer;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="box">
+  <p>Preparing your session&hellip;</p>
+  <form id="prolific-room-form" method="get">
+    <input type="hidden" name="welcome_page_ok" value="1">
+    <input type="hidden" name="participant_label" id="participant_label_field" value="">
+    <noscript><button type="submit" class="btn">Continue</button></noscript>
+  </form>
+</div>
+
+<script>
+(function () {
+  // Prolific appends its own three URL params (standard Prolific format,
+  // not configurable on their end) - capture them here, before oTree's
+  // room/participant redirect chain strips everything except
+  // participant_label. We fold them into participant_label using the same
+  // "~"-delimited scheme that intro/Welcome.before_next_page already parses,
+  // so no further server-side changes are needed.
+  var params = new URLSearchParams(window.location.search);
+  var pid = params.get('PROLIFIC_PID') || '';
+  var studyId = params.get('STUDY_ID') || '';
+  var sessionId = params.get('SESSION_ID') || '';
+  if (pid || studyId || sessionId) {
+    document.getElementById('participant_label_field').value = pid + '~' + studyId + '~' + sessionId;
+  }
+  // No Prolific params present (e.g. a manual /room/chatai test): leave
+  // participant_label empty. oTree treats an empty participant_label the
+  // same as a missing one and falls back to normal cookie-based assignment.
+  document.getElementById('prolific-room-form').submit();
+})();
+</script>
+</body>
+</html>
