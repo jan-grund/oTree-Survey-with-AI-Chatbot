@@ -1,0 +1,22 @@
+{{ block title }}Welcome{{ endblock }}
+{{ block content }}
+<style>
+.qs-page{max-width:680px}
+.qs-instruction{font-size:1rem;line-height:1.6;margin-bottom:1.25rem}
+</style>
+
+<div class="qs-page">
+  {{ include '_progress.html' with percent=progress.percent }}
+  <p class="qs-instruction">Welcome…</p>
+  <p class="qs-instruction">…and thank you for your willingness to take part in this scientific study on the use of AI chatbots, conducted by the University of Duisburg-Essen.</p>
+  <p class="qs-instruction">The aim of this study is to investigate how people use AI-based information systems and how they evaluate the quality and credibility of AI-generated answers.</p>
+  <p class="qs-instruction">Participation takes approximately <strong>10–15 minutes</strong>.</p>
+  <p class="qs-instruction">Compensation for participation is handled through the panel through which you accessed this study.</p>
+  <p class="qs-instruction">Before you begin, we will inform you about data protection in this study. Please read these explanations carefully and confirm your consent at the end of the next page.</p>
+  <p class="qs-instruction">If you have any questions about the study beforehand, please contact the person responsible for the project:</p>
+  <p class="qs-instruction">Jan-Sebastian Grund (University of Duisburg-Essen), jan-sebastian.grund@stud.uni-due.de</p>
+  <p class="qs-instruction">If you would like to take part in the study, click "Next." On the following page you will be informed in detail about data protection, anonymity, and data storage in the context of this study.</p>
+
+  <button type="submit" class="btn btn-primary btn-large">Next</button>
+</div>
+{{ endblock }}

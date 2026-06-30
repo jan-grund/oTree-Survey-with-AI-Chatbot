@@ -1,0 +1,53 @@
+{{ block title }}&nbsp;{{ endblock }}
+{{ block content }}
+<style>
+.qs-page{max-width:680px}
+.qs-instruction{font-size:1rem;line-height:1.6;margin-bottom:1.5rem}
+#start-btn.is-waiting{opacity:.6;cursor:not-allowed}
+.qs-start-hint{display:none;color:#555;font-size:.85rem;margin-top:.6rem}
+.qs-start-hint.show{display:block}
+</style>
+
+<div class="qs-page">
+  {{ include '_progress.html' with percent=progress.percent }}
+  <p class="qs-instruction">
+    You recently talked with a relative or friend about banning social media for young people. They
+    were convinced it's clearly the right thing to do and that the evidence fully supports it. Their
+    certainty made you curious, so you decide to look into the topic yourself with the help of an AI
+    assistant. You might, for example, ask about different aspects of the topic. Feel free to ask
+    follow-up questions to get a fuller picture. Click 'Start' to begin your conversation with the AI
+    Assistant.
+  </p>
+
+  <button type="button" id="start-btn" class="btn btn-primary btn-large is-waiting" aria-disabled="true">Start</button>
+  <div class="qs-start-hint" id="start-hint">Please take a moment to read. You can start in a few seconds.</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.querySelector('form');
+  var btn = document.getElementById('start-btn');
+  var hint = document.getElementById('start-hint');
+  var ready = false;
+
+  setTimeout(function () {
+    ready = true;
+    if (btn) {
+      btn.classList.remove('is-waiting');
+      btn.setAttribute('aria-disabled', 'false');
+    }
+    if (hint) hint.classList.remove('show');
+  }, 5000);
+
+  if (btn) {
+    btn.addEventListener('click', function () {
+      if (!ready) {
+        if (hint) hint.classList.add('show');
+        return;
+      }
+      if (form) { form.requestSubmit ? form.requestSubmit() : form.submit(); }
+    });
+  }
+});
+</script>
+{{ endblock }}

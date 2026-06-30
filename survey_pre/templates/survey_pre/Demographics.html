@@ -1,0 +1,16 @@
+{{ block title }}&nbsp;{{ endblock }}
+{{ block content }}
+<style>
+.qs-page{max-width:480px}
+.qs-instruction{margin-bottom:1.5rem;font-size:1rem}
+</style>
+
+<div class="qs-page">
+  {{ include '_progress.html' with percent=progress.percent }}
+  <p class="qs-instruction"><strong>Please answer the following questions about yourself.</strong></p>
+
+  {{ formfields }}
+
+  <button type="submit" class="btn btn-primary btn-large">Next</button>
+</div>
+{{ endblock }}

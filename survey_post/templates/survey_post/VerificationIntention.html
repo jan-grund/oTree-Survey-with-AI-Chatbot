@@ -1,0 +1,127 @@
+{{ block title }}&nbsp;{{ endblock }}
+{{ block content }}
+<style>
+.qs-page{max-width:480px}
+.qs-instruction{margin-bottom:1.5rem;font-size:1rem}
+.q-block{margin-bottom:2rem}
+.q-label{font-size:.97rem;font-weight:500;margin-bottom:.65rem;line-height:1.5;color:#1a1a1a}
+.scale-container{width:100%}
+.scale-row{display:flex;flex-wrap:nowrap}
+.scale-row input[type=radio]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+.scale-row label{flex:1 1 0;min-width:0;min-height:44px;display:flex;align-items:center;justify-content:center;border:1.5px solid #ccc;border-left-width:0;cursor:pointer;font-size:.92rem;font-weight:500;color:#555;background:#fff;transition:background .15s,color .15s,border-color .15s;user-select:none;text-align:center;padding:.4rem .3rem}
+.scale-row label:first-of-type{border-left-width:1.5px;border-radius:5px 0 0 5px}
+.scale-row label:last-of-type{border-radius:0 5px 5px 0}
+.scale-row label:hover{background:#f5f5f5;color:#222}
+.scale-row input[type=radio]:checked+label{background:#2d3748;color:#fff;border-color:#2d3748}
+.scale-row input[type=radio]:focus-visible+label{outline:2px solid #2d3748;outline-offset:2px}
+.q-error-msg{display:none;color:#c0392b;font-size:.8rem;margin-top:4px}
+.q-block.has-error .scale-row label{border-color:#e05555}
+.q-block.has-error .q-error-msg{display:block}
+
+@media (max-width:500px){
+  .scale-row{flex-direction:column}
+  .scale-row label{border-left-width:1.5px;border-top-width:0;border-radius:0;width:100%}
+  .scale-row label:first-of-type{border-top-width:1.5px;border-radius:5px 5px 0 0}
+  .scale-row label:last-of-type{border-radius:0 0 5px 5px}
+}
+</style>
+
+<div class="qs-page">
+  {{ include '_progress.html' with percent=progress.percent }}
+  <p class="qs-instruction"><strong>{{ scale_label }}</strong></p>
+
+  <div class="q-block" data-field="{{ q1.name }}" id="block-1">
+    <p class="q-label">{{ q1.label }}</p>
+    <div class="scale-container">
+      <div class="scale-row">
+        {{ for c in q1.choices }}
+        <input type="radio" name="{{ q1.name }}" id="{{ q1.name }}_{{ c.value }}" value="{{ c.value }}">
+        <label for="{{ q1.name }}_{{ c.value }}">{{ c.text }}</label>
+        {{ endfor }}
+      </div>
+    </div>
+    <div class="q-error-msg">Please select an answer.</div>
+  </div>
+
+  <button type="button" id="reveal-btn" class="btn btn-primary btn-large">Next</button>
+
+  <div class="q-block" data-field="{{ q2_name }}" id="block-2" style="display:none;">
+    <p class="q-label" id="q2-label"></p>
+    <div class="scale-container">
+      <div class="scale-row">
+        {{ for c in q2_choices }}
+        <input type="radio" name="{{ q2_name }}" id="{{ q2_name }}_{{ c.value }}" value="{{ c.value }}">
+        <label for="{{ q2_name }}_{{ c.value }}">{{ c.text }}</label>
+        {{ endfor }}
+      </div>
+    </div>
+    <div class="q-error-msg">Please select an answer.</div>
+  </div>
+
+  <button type="button" id="next-btn" class="btn btn-primary btn-large" style="display:none;">Next</button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.querySelector('form');
+  if (!form) return;
+  form.noValidate = true;
+
+  var block1 = document.getElementById('block-1');
+  var block2 = document.getElementById('block-2');
+  var revealBtn = document.getElementById('reveal-btn');
+  var nextBtn = document.getElementById('next-btn');
+  var q2Label = document.getElementById('q2-label');
+
+  var LABEL_YES = "Would you like to see additional sources on this topic now?";
+  var LABEL_NO = "Would you still like to see additional sources on this topic?";
+
+  function checkedValue(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : null;
+  }
+
+  function updateQ2Label() {
+    var v = checkedValue('{{ q1.name }}');
+    q2Label.textContent = (v === '1') ? LABEL_YES : LABEL_NO;
+  }
+
+  document.querySelectorAll('input[name="{{ q1.name }}"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      block1.classList.remove('has-error');
+      if (block2.style.display !== 'none') { updateQ2Label(); }
+    });
+  });
+
+  document.querySelectorAll('input[name="{{ q2_name }}"]').forEach(function (r) {
+    r.addEventListener('change', function () { block2.classList.remove('has-error'); });
+  });
+
+  revealBtn.addEventListener('click', function () {
+    if (!checkedValue('{{ q1.name }}')) {
+      block1.classList.add('has-error');
+      block1.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    block1.classList.remove('has-error');
+    updateQ2Label();
+    block2.style.display = '';
+    revealBtn.style.display = 'none';
+    nextBtn.style.display = '';
+    block2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  nextBtn.addEventListener('click', function () {
+    var ok = true;
+    if (!checkedValue('{{ q1.name }}')) { block1.classList.add('has-error'); ok = false; }
+    if (!checkedValue('{{ q2_name }}')) { block2.classList.add('has-error'); ok = false; }
+    if (!ok) {
+      var firstErr = document.querySelector('.q-block.has-error');
+      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    form.requestSubmit ? form.requestSubmit() : form.submit();
+  });
+});
+</script>
+{{ endblock }}

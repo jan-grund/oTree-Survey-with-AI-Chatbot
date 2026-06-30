@@ -8,9 +8,27 @@
 </style>
 {{ endblock }}
 
-
 {{ block scripts }}
 <script>
+let typingId = '';
+let typingDate = 0;
+
+    // minimum number of user messages required before the participant may continue
+    const MIN_USER_MESSAGES = 3;
+
+    function countUserMessages() {
+        return document.querySelectorAll('#chatMessages .selfMsg').length;
+    }
+
+    function updateContinueState() {
+        const continueBtn = document.getElementById('continueBtn');
+        if (!continueBtn) return;
+        if (countUserMessages() >= MIN_USER_MESSAGES) {
+            continueBtn.classList.remove('is-disabled');
+        } else {
+            continueBtn.classList.add('is-disabled');
+        }
+    }
 
     // run this when page loads
     document.addEventListener('DOMContentLoaded', function() {
@@ -19,34 +37,56 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault();
         });
-        
+
         // delay chat input focus
         setTimeout(() => {
             const chatInput = document.getElementById('chatinput');
             chatInput.focus();
         }, 100);
-        
+
+        updateContinueState();
+
+        const continueBtn = document.getElementById('continueBtn');
+        const chatNotice = document.getElementById('chatNotice');
+        if (continueBtn) {
+            continueBtn.addEventListener('click', function () {
+                if (countUserMessages() < MIN_USER_MESSAGES) {
+                    if (chatNotice) chatNotice.classList.add('show');
+                    return;
+                }
+                if (chatNotice) chatNotice.classList.remove('show');
+                form.submit();
+            });
+        }
     });
 
 
-    // run sendMsg when enter key is pressed
-    var chatInput = document.getElementById('chatinput');    
+    // run sendMsg when enter key is pressed (shift+enter = newline)
+    var chatInput = document.getElementById('chatinput');
     chatInput.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
             sendMsg();
         }
     });
 
-    
+    // auto-resize textarea as user types
+    chatInput.addEventListener('input', function () {
+        this.style.height = 'auto';
+        var newHeight = Math.min(this.scrollHeight, 120);
+        this.style.height = newHeight + 'px';
+        this.style.overflowY = this.scrollHeight > 120 ? 'auto' : 'hidden';
+    });
+
+
     // function to send user message to server
     function sendMsg() {
         const text = chatInput.value.trim();
-        const typingId = ''
-        const typingDate = 0
         if (text) {
             liveSend({'event': 'text', 'text': text});
-            // clear the input field
             chatInput.value = '';
+            chatInput.style.height = 'auto';
+            chatInput.style.overflowY = 'hidden';
         }
     }
 
@@ -68,7 +108,7 @@
             // get chat elements
             const chatInput = document.getElementById('chatinput');
             const chatMessages = document.getElementById('chatMessages');
-            
+
             // create message html from subject input and insert into chatMessages
             let messageHtml = `
                 <div class="message selfMsg" id="${messageId}" data-author="${sender}">
@@ -77,6 +117,7 @@
             `;
             chatMessages.insertAdjacentHTML('beforeend', messageHtml);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+            updateContinueState();
 
             // trigger bot message
             liveSend({'event': 'botMsg'});
@@ -109,7 +150,7 @@
             // get chat elements
             const chatInput = document.getElementById('chatinput');
             const chatMessages = document.getElementById('chatMessages');
-            
+
             // typing indicator delay
             const now = Date.now();
             const elapsed = typingDate ? (now - typingDate) : js_vars.min_typing_ms;
@@ -123,7 +164,7 @@
                 if (typingIndicator) {
                     typingIndicator.remove();
                 }
-          
+
                 // replace with bot response
                 let botHtml = `
                     <div class="message botMsg ${botClass}" id="${botMsgId}" data-author="${sender}">
@@ -142,65 +183,68 @@
 
 
 {{ block content }}
-<div class='container card mb-3'>
-    <div class='row no-gutters'>
-        
-        <!-- left side of interface, with timer and other info -->
-        <div class='infoBox col-md-4 d-flex align-items-center justify-content-center' style='font-size:22px; height: 100%; min-height: 300px;'>
-            <span class='timer'>
-                Page will auto-advance in:
-                <span class='otree-timer__time-left'></span>
-            </span>
-            <br>
-            
-            {{ if botParty == 'Republican'}}
-                Your chat bot's political party is <span class='redSpan'>{{ botParty }}.</span>
-            {{ elif botParty == 'Democrat' }}
-                Your chat bot's political party is <span class='blueSpan'>{{ botParty }}.</span>
-            {{ else }}    
-                Your chat bot's political party is <span class='miscSpan'>{{ botParty }}.</span>
-            {{ endif }}
+<div class="chatWrapper">
 
-            <br><br>
-            <b>Prompt:</b> <i>What, if anything, do you think can be done to reduce gun violence?</i>
+    {{ include '_progress.html' with percent=progress.percent }}
+    <div class="chatHeader">AI Assistant</div>
+
+    <div class="instructionBox">
+        <p>Your relative or friend said that social media bans are totally safe. Ask the AI Assistant about it to inform yourself.</p>
+        <p>Please do not share any personal information (such as your name, address, or contact details) in the chat. Write only about the topic.</p>
+    </div>
+
+    <div id="chatMessages" class="chatMessages">
+        <div class="message sysMsg">
+            Ask the AI Assistant your questions.
         </div>
-
-        <!-- right side of interface, with chat box and text input -->
-        <div class='chatPanel col-md-8' id='chatPanel'>
-            <div class='chatHeader'>
-                Bot Chat
-            </div>
-            <div id='chatMessages' class='chatMessages'>
-                <div class='message sysMsg'>
-                    <strong>System<br></strong>
-                    Please send a message to begin the conversation.
-                </div>
-               {{ if cached_messages and show_history }}
-                    {{ for msg in cached_messages }}
-                        {{ if msg.role == 'assistant' }}                    
-                            <div class="message botMsg {{botClass}}" >
-                                <strong>Bot<br></strong> {{ msg.content }}
-                            </div>    
-                        {{ endif }}
-                        {{ if msg.role == 'user' }}                    
-                            <div class="message selfMsg" >
-                                <strong>You<br></strong> {{ msg.content }}
-                            </div>    
-                        {{ endif }}
-                    {{ endfor }}
+        {{ if cached_messages and show_history }}
+            {{ for msg in cached_messages }}
+                {{ if msg.role == 'assistant' }}
+                    <div class="message botMsg {{ botClass }}">
+                        <strong>AI Assistant<br></strong> {{ msg.content }}
+                    </div>
                 {{ endif }}
+                {{ if msg.role == 'user' }}
+                    <div class="message selfMsg">
+                        <strong>You<br></strong> {{ msg.content }}
+                    </div>
+                {{ endif }}
+            {{ endfor }}
+        {{ endif }}
+    </div>
 
-
-            </div>
-        
-            <div class='inputBox'>
-                <div class='typeInputBox'>
-                    <input type='text' id='chatinput' style='text-align:right;' maxlength='200'>
-                    <button type='button' onclick='sendMsg()'>Send</button>
-                </div>
-            </div> 
+    <div class="inputArea">
+        <div class="timerHint">
+            Time remaining: <span id="myTimer">—</span>
+        </div>
+        <div class="inputRow">
+            <textarea id="chatinput" maxlength="500" rows="1"
+                      placeholder="Type a message…"></textarea>
+            <button type="button" class="sendBtn" onclick="sendMsg()">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 19V5M5 12l7-7 7 7"
+                          stroke="white" stroke-width="2.5"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        <div class="chatContinueRow">
+            <button type="button" id="continueBtn" class="btn btn-primary btn-large is-disabled">Continue</button>
+            <div class="chatNotice" id="chatNotice">Please send at least 3 messages before continuing.</div>
         </div>
     </div>
+
 </div>
 
+<script>
+    /* Mirror oTree countdown into our custom timer display */
+    (function () {
+        var dst = document.getElementById('myTimer');
+        if (!dst) return;
+        setInterval(function () {
+            var src = document.querySelector('.otree-timer__time-left');
+            if (src && src.textContent) dst.textContent = src.textContent;
+        }, 500);
+    })();
+</script>
 {{ endblock }}

@@ -1,0 +1,98 @@
+{{ block title }}&nbsp;{{ endblock }}
+{{ block content }}
+<style>
+.qs-page{max-width:480px}
+.qs-content-intro{font-size:1.05rem;font-weight:600;color:#1a1a1a;line-height:1.5;margin-bottom:1rem}
+.qs-fillin-instruction{font-size:.85rem;font-weight:400;color:#555;margin-bottom:1.25rem}
+.q-block{margin-bottom:2rem}
+.q-label{font-size:.97rem;font-weight:500;margin-bottom:.65rem;line-height:1.5;color:#1a1a1a}
+.slider-wrap{width:100%;padding:6px 0}
+.qs-slider{
+  -webkit-appearance:none;-moz-appearance:none;appearance:none;
+  width:100%;height:28px;margin:0;display:block;cursor:pointer;background:transparent;
+}
+.qs-slider:focus{outline:none}
+.qs-slider::-webkit-slider-runnable-track{height:6px;background:#ddd;border-radius:3px}
+.qs-slider::-moz-range-track{height:6px;background:#ddd;border-radius:3px}
+.qs-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:20px;height:20px;border-radius:50%;background:#2d3748;border:none;
+  margin-top:-7px;opacity:0;transition:opacity .15s;cursor:pointer;
+}
+.qs-slider::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;background:#2d3748;border:none;
+  opacity:0;transition:opacity .15s;cursor:pointer;
+}
+.qs-slider.touched::-webkit-slider-thumb{opacity:1}
+.qs-slider.touched::-moz-range-thumb{opacity:1}
+.slider-value-display{min-height:1.2rem;font-size:.95rem;font-weight:600;color:#2d3748;text-align:center;margin-top:.3rem}
+.scale-anchors{display:flex;justify-content:space-between;margin-top:7px;font-size:.8rem;color:#555;font-weight:400}
+.scale-anchors span:first-child{text-align:left;max-width:48%}
+.scale-anchors span:last-child{text-align:right;max-width:48%}
+.q-error-msg{display:none;color:#c0392b;font-size:.8rem;margin-top:4px}
+.q-block.has-error .slider-wrap{outline:2px solid #e05555;border-radius:4px}
+.q-block.has-error .q-error-msg{display:block}
+</style>
+
+<div class="qs-page">
+  {{ include '_progress.html' with percent=progress.percent }}
+  {{ if content_intro }}<p class="qs-content-intro">{{ content_intro }}</p>{{ endif }}
+  {{ if fillin_instruction }}<p class="qs-fillin-instruction">{{ fillin_instruction }}</p>{{ endif }}
+
+  {{ for q in questions }}
+  <div class="q-block" data-field="{{ q.name }}">
+    <p class="q-label">{{ q.label }}</p>
+    <div class="slider-wrap">
+      <input type="range" class="qs-slider" name="{{ q.name }}" id="{{ q.name }}" min="0" max="100" value="0" data-touched="0">
+      <div class="slider-value-display" id="{{ q.name }}_display"></div>
+      <div class="scale-anchors"><span>0 = knowing nothing</span><span>100 = knowing everything you could possibly know</span></div>
+    </div>
+    <div class="q-error-msg">Please move the slider to give your answer.</div>
+  </div>
+  {{ endfor }}
+
+  <button type="button" id="next-btn" class="btn btn-primary btn-large">Next</button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.querySelector('form');
+  if (!form) return;
+  form.noValidate = true;
+
+  var sliders = Array.prototype.slice.call(document.querySelectorAll('.qs-slider'));
+
+  sliders.forEach(function (slider) {
+    var display = document.getElementById(slider.id + '_display');
+    var block = slider.closest('.q-block');
+    function markTouched() {
+      slider.dataset.touched = '1';
+      slider.classList.add('touched');
+      if (display) display.textContent = 'Your answer: ' + slider.value;
+      if (block) block.classList.remove('has-error');
+    }
+    slider.addEventListener('input', markTouched);
+    slider.addEventListener('change', markTouched);
+  });
+
+  var nextBtn = document.getElementById('next-btn');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function () {
+      var firstErr = null;
+      sliders.forEach(function (slider) {
+        var block = slider.closest('.q-block');
+        if (!block) return;
+        if (slider.dataset.touched === '1') {
+          block.classList.remove('has-error');
+        } else {
+          block.classList.add('has-error');
+          if (!firstErr) firstErr = block;
+        }
+      });
+      if (firstErr) { firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+      form.requestSubmit ? form.requestSubmit() : form.submit();
+    });
+  }
+});
+</script>
+{{ endblock }}

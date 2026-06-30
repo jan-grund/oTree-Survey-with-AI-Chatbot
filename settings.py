@@ -6,55 +6,11 @@ load_dotenv()
 
 
 SESSION_CONFIGS = [
-     dict(
-         name='chat_simple',
-         app_sequence=['chat_simple',],
-         num_demo_participants=1,
-     ),
-     dict(
-         name='chat_complex',
-         app_sequence=['chat_complex',],
-         num_demo_participants=1,
-     ),
-     
-     dict(
-         name='chat_voice',
-         app_sequence=['chat_voice',],
-         num_demo_participants=1,
-     ),
-     dict(
-         name='dictator_game',
-         app_sequence=['dictator_game',],
-         num_demo_participants=1,
-     ),
-     dict(
-         name='chat_multiple_agents',
-         app_sequence=['chat_multiple_agents',],
-         num_demo_participants=1,
-     ),
-     dict(
-         name='threejs',
-         app_sequence=['threejs',],
-         num_demo_participants=1,
-     ),
-     dict(
-         name='chat_2humans1bot',
-         app_sequence=['chat_2humans1bot',],
-         num_demo_participants=2,
-     ),
-     dict(
-         name='chat_japanese',
-         app_sequence=['chat_japanese',],
-         num_demo_participants=100,  # デモ参加者数を増やして繰り返しテスト可能に
-         use_browser_bots=False,  # リンクを繰り返し使用可能にする
-     ),
-     dict(
-         name='traffic_light',
-         display_name='Traffic Light Game',
-         app_sequence=['traffic_light',],
-         num_demo_participants=1,
-     ),
-
+    dict(
+        name='humble_ai_study',
+        app_sequence=['intro', 'survey_pre', 'chat_simple', 'survey_post', 'outro'],
+        num_demo_participants=1,
+    ),
 ]
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
 # in SESSION_CONFIGS, except those that explicitly override it.
@@ -65,7 +21,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc=""
 )
 
-PARTICIPANT_FIELDS = []
+PARTICIPANT_FIELDS = ['condition', 'prolific_pid', 'study_id', 'prolific_session_id']
 SESSION_FIELDS = []
 
 
