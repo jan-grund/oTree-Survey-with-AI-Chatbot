@@ -131,15 +131,15 @@ class Player(BasePlayer):
     # ── Subjective Prior Knowledge and Sufficiency ──────
     # 0 = knowing nothing, 100 = knowing everything you could possibly know
     know_pre = models.IntegerField(
-        label="How much do you feel you know about social media bans for young people?",
+        label="How much do you feel you know about social media bans for children and adolescents under 16?",
         min=0, max=100)
     suff_pre = models.IntegerField(
-        label="How much would you need to know to deal with social media bans to your own satisfaction?",
+        label="How much would you need to know about this topic to feel sufficiently informed?",
         min=0, max=100)
 
     # ── Prior Attitude ───────────────────────────────────
     attitude = models.IntegerField(
-        label="Banning social media is the right thing to do.",
+        label="Banning social media for children and adolescents under the age of 16 is the right thing to do.",
         choices=[1, 2, 3, 4, 5, 6], widget=widgets.RadioSelectHorizontal)
     att_certainty = models.IntegerField(
         label="How certain are you of your opinion on this topic?",
@@ -191,22 +191,23 @@ class Trust(Page):
 
     @staticmethod
     def vars_for_template(player):
-        left, right = "strongly disagree", "strongly agree"
+        anchors = ["strongly disagree", "disagree", "neither agree nor disagree", "agree", "strongly agree"]
+        choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 6)]
         return dict(
             progress=global_progress(5),
             content_intro="The next questions are about your general views on AI tools.",
             scale_label="Please indicate how much you agree with each of the following statements.",
             questions=[
                 dict(name='trust_1', label="I believe in AI chatbots when searching for information.",
-                    choices=range(1, 6), left=left, right=right),
+                    choices=choices),
                 dict(name='trust_2', label="I trust AI chatbots when searching for information.",
-                    choices=range(1, 6), left=left, right=right),
+                    choices=choices),
                 dict(name='trust_3', label="I distrust AI chatbots when searching for information.",
-                    choices=range(1, 6), left=left, right=right),
+                    choices=choices),
                 dict(name='trust_4', label="AI chatbots are designed to be trustworthy.",
-                    choices=range(1, 6), left=left, right=right),
+                    choices=choices),
                 dict(name='trust_5', label="I can depend on AI chatbots when searching for information.",
-                    choices=range(1, 6), left=left, right=right),
+                    choices=choices),
             ],
         )
 
@@ -217,7 +218,9 @@ class VerificationBehavior(Page):
 
     @staticmethod
     def vars_for_template(player):
-        left, right = "strongly disagree", "strongly agree"
+        anchors = ["strongly disagree", "disagree", "somewhat disagree", "neither agree nor disagree",
+                   "somewhat agree", "agree", "strongly agree"]
+        choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 8)]
         return dict(
             progress=global_progress(6),
             content_intro="The following questions are about your everyday information habits.",
@@ -225,10 +228,10 @@ class VerificationBehavior(Page):
             questions=[
                 dict(name='verif_beh_1',
                      label="When looking up information I always use other sources than AI answers.",
-                     choices=range(1, 8), left=left, right=right),
+                     choices=choices),
                 dict(name='verif_beh_2',
                      label="When using AI to look up information I always visit external sources to verify the given information.",
-                     choices=range(1, 8), left=left, right=right),
+                     choices=choices),
             ],
         )
 
@@ -239,7 +242,8 @@ class GIHS(Page):
 
     @staticmethod
     def vars_for_template(player):
-        left, right = "not at all like me", "very much like me"
+        anchors = ["not at all like me", "a little like me", "somewhat like me", "mostly like me", "very much like me"]
+        choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 6)]
         return dict(
             progress=global_progress(7),
             content_intro="The following statements describe different ways people think about their own views and beliefs.",
@@ -247,19 +251,19 @@ class GIHS(Page):
             questions=[
                 dict(name='gihs_1',
                      label="I question my own opinions, positions, and viewpoints because they could be wrong.",
-                     choices=range(1, 6), left=left, right=right),
+                     choices=choices),
                 dict(name='gihs_2', label="I reconsider my opinions when presented with new evidence.",
-                     choices=range(1, 6), left=left, right=right),
+                     choices=choices),
                 dict(name='gihs_3', label="I recognize the value in opinions that are different from my own.",
-                     choices=range(1, 6), left=left, right=right),
+                     choices=choices),
                 dict(name='gihs_4', label="I accept that my beliefs and attitudes may be wrong.",
-                     choices=range(1, 6), left=left, right=right),
+                     choices=choices),
                 dict(name='gihs_5',
                      label="In the face of conflicting evidence, I am open to changing my opinions.",
-                     choices=range(1, 6), left=left, right=right),
+                     choices=choices),
                 dict(name='gihs_6',
                      label="I like finding out new information that differs from what I already think is true.",
-                     choices=range(1, 6), left=left, right=right),
+                     choices=choices),
             ],
         )
 
@@ -270,18 +274,19 @@ class SIHS_pre(Page):
 
     @staticmethod
     def vars_for_template(player):
-        left, right = "not at all like me", "very much like me"
+        anchors = ["not at all like me", "a little like me", "somewhat like me", "mostly like me", "very much like me"]
+        choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 6)]
         return dict(
             progress=global_progress(8),
             content_intro="The following statements are about your personal views on social media bans.",
             scale_label="Please indicate how much each statement applies to you.",
             questions=[
                 dict(name='sihs_pre_7', label="My views about social media bans today may someday turn out to be wrong.",
-                     choices=range(1, 6), left=left, right=right),
+                     choices=choices),
                 dict(name='sihs_pre_8', label="When it comes to my views about social media bans I may be overlooking evidence.",
-                     choices=range(1, 6), left=left, right=right),
+                     choices=choices),
                 dict(name='sihs_pre_9', label="My views about social media bans may change with additional evidence or information.",
-                     choices=range(1, 6), left=left, right=right),
+                     choices=choices),
             ],
         )
 
@@ -294,12 +299,13 @@ class KnowledgeSufficiency(Page):
     def vars_for_template(player):
         return dict(
             progress=global_progress(9),
-            content_intro="We have two quick questions about social media bans for young people.",
+            content_intro="We have two quick questions about social media bans for children and adolescents under 16.",
             fillin_instruction="Please answer the following two questions using the slider.",
             questions=[
-                dict(name='know_pre', label="How much do you feel you know about social media bans for young people?"),
+                dict(name='know_pre',
+                     label="How much do you feel you know about social media bans for children and adolescents under 16?"),
                 dict(name='suff_pre',
-                     label="How much would you need to know to deal with social media bans to your own satisfaction?"),
+                     label="How much would you need to know about this topic to feel sufficiently informed?"),
             ],
         )
 
@@ -310,17 +316,23 @@ class PriorAttitude(Page):
 
     @staticmethod
     def vars_for_template(player):
+        attitude_anchors = ["strongly disagree", "disagree", "slightly disagree",
+                            "slightly agree", "agree", "strongly agree"]
+        certainty_anchors = ["not at all certain", "slightly certain", "somewhat certain", "moderately certain",
+                             "fairly certain", "very certain", "completely certain"]
+        importance_anchors = ["not at all important", "slightly important", "somewhat important",
+                              "moderately important", "fairly important", "very important", "extremely important"]
         return dict(
             progress=global_progress(10),
-            content_intro="We are also interested in your personal view on social media bans.",
+            content_intro="In the following, we focus on a current topic of debate: whether social media should be banned for children and adolescents under the age of 16. We would first like to know your opinion on this question.",
             scale_label="Please indicate how much you agree with the following statement, and how you feel about the topic.",
             questions=[
-                dict(name='attitude', label="Banning social media is the right thing to do.",
-                     choices=range(1, 7), left="strongly disagree", right="strongly agree"),
+                dict(name='attitude', label="Banning social media for children and adolescents under the age of 16 is the right thing to do.",
+                     choices=[dict(value=i, text=attitude_anchors[i - 1]) for i in range(1, 7)]),
                 dict(name='att_certainty', label="How certain are you of your opinion on this topic?",
-                     choices=range(1, 8), left="not at all certain", right="very certain"),
+                     choices=[dict(value=i, text=certainty_anchors[i - 1]) for i in range(1, 8)]),
                 dict(name='att_importance', label="How important is this topic to you personally?",
-                     choices=range(1, 8), left="not at all important", right="very important"),
+                     choices=[dict(value=i, text=importance_anchors[i - 1]) for i in range(1, 8)]),
             ],
         )
 

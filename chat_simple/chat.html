@@ -17,7 +17,16 @@ let typingDate = 0;
     const MIN_USER_MESSAGES = 3;
 
     function countUserMessages() {
-        return document.querySelectorAll('#chatMessages .selfMsg').length;
+        const msgs = document.querySelectorAll('#chatMessages .selfMsg');
+        let count = 0;
+        msgs.forEach(function(msg) {
+            const clone = msg.cloneNode(true);
+            const strong = clone.querySelector('strong');
+            if (strong) strong.remove();
+            const words = clone.textContent.trim().split(/\s+/).filter(Boolean).length;
+            if (words >= 6) count++;
+        });
+        return count;
     }
 
     function updateContinueState() {
@@ -122,22 +131,21 @@ let typingDate = 0;
             // trigger bot message
             liveSend({'event': 'botMsg'});
 
-            // Add typing indicator for bot after a small delay
-            setTimeout(() => {
-                typingId = 'typing-' + Date.now();
-                typingDate = Date.now()
-                let typingHtml = `
-                    <div class="message botMsg typing ${botClass}" id="${typingId}">
-                        <div class="typing-indicator">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
+            // Show the loading indicator immediately so the participant always
+            // gets instant feedback that a response is in flight (no delay).
+            typingId = 'typing-' + Date.now();
+            typingDate = Date.now();
+            let typingHtml = `
+                <div class="message botMsg typing ${botClass}" id="${typingId}">
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
                     </div>
-                `;
-                chatMessages.insertAdjacentHTML('beforeend', typingHtml);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, js_vars.typing_delay_ms);
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', typingHtml);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         // handle bot messages
         } else if (event == 'botText') {
 
@@ -230,7 +238,7 @@ let typingDate = 0;
         </div>
         <div class="chatContinueRow">
             <button type="button" id="continueBtn" class="btn btn-primary btn-large is-disabled">Continue</button>
-            <div class="chatNotice" id="chatNotice">Please send at least 3 messages before continuing.</div>
+            <div class="chatNotice{{ if form.non_field_error }} show{{ endif }}" id="chatNotice">Please continue exploring the topic for a little longer before proceeding.</div>
         </div>
     </div>
 

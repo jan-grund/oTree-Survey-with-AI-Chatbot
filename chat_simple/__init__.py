@@ -30,6 +30,12 @@ class C(BaseConstants):
     OPENAI_KEY = environ.get('OPENAI_KEY')
     MODEL = "gpt-4.1-mini"
 
+    # minimum-duration and message-count gate before the chat page can be left
+    MIN_CHAT_SECONDS = 180
+    MIN_QUALIFYING_MESSAGES = 3
+    MIN_MESSAGE_WORDS = 6
+    GATE_NOTICE = "Please continue exploring the topic for a little longer before proceeding."
+
     SYS_CONTROL = _SYS_CONTROL
     SYS_HUMBLE  = _SYS_HUMBLE
 
@@ -81,6 +87,7 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     condition = models.StringField()
     cachedMessages = models.LongStringField(initial='[]')
+    chatStartedAt = models.StringField()
 
 
 ########################################################
@@ -133,6 +140,20 @@ def custom_export(players):
         ]
 
 
+def _qualifying_message_count(player):
+    try:
+        messages = json.loads(player.cachedMessages)
+    except (TypeError, ValueError):
+        messages = []
+    count = 0
+    for m in messages:
+        if m.get('role') == 'user':
+            words = len(m.get('content', '').strip().split())
+            if words >= C.MIN_MESSAGE_WORDS:
+                count += 1
+    return count
+
+
 ########################################################
 # Pages                                                #
 ########################################################
@@ -150,6 +171,10 @@ class chat(Page):
 
     @staticmethod
     def vars_for_template(player):
+        # server-recorded, reload-safe start time for the 3-minute minimum
+        if not player.field_maybe_none('chatStartedAt'):
+            player.chatStartedAt = str(datetime.now(tz=timezone.utc).timestamp())
+
         condition = player.condition
         if condition == 'Humble':
             botClass = 'blueText'
@@ -167,6 +192,16 @@ class chat(Page):
             condition=condition,
             progress=global_progress(12),
         )
+
+    @staticmethod
+    def error_message(player: Player, values):
+        now = datetime.now(tz=timezone.utc).timestamp()
+        started_raw = player.field_maybe_none('chatStartedAt')
+        started = float(started_raw) if started_raw else now
+        elapsed_ok = (now - started) >= C.MIN_CHAT_SECONDS
+        messages_ok = _qualifying_message_count(player) >= C.MIN_QUALIFYING_MESSAGES
+        if not (elapsed_ok and messages_ok):
+            return C.GATE_NOTICE
 
     @staticmethod
     async def live_method(player: Player, data):
