@@ -197,7 +197,7 @@ let typingDate = 0;
     <div class="chatHeader">AI Assistant</div>
 
     <div class="instructionBox">
-        <p>Your relative or friend said that social media bans are totally safe. Ask the AI Assistant about it to inform yourself.</p>
+        <p>Your relative or friend is convinced that banning social media for children and adolescents under the age of 16 is clearly the right thing to do. Ask the AI Assistant about it to inform yourself.</p>
         <p>Please do not share any personal information (such as your name, address, or contact details) in the chat. Write only about the topic.</p>
     </div>
 
@@ -222,9 +222,6 @@ let typingDate = 0;
     </div>
 
     <div class="inputArea">
-        <div class="timerHint">
-            Time remaining: <span id="myTimer">—</span>
-        </div>
         <div class="inputRow">
             <textarea id="chatinput" maxlength="500" rows="1"
                       placeholder="Type a message…"></textarea>
@@ -244,15 +241,4 @@ let typingDate = 0;
 
 </div>
 
-<script>
-    /* Mirror oTree countdown into our custom timer display */
-    (function () {
-        var dst = document.getElementById('myTimer');
-        if (!dst) return;
-        setInterval(function () {
-            var src = document.querySelector('.otree-timer__time-left');
-            if (src && src.textContent) dst.textContent = src.textContent;
-        }, 500);
-    })();
-</script>
 {{ endblock }}
