@@ -33,7 +33,7 @@ class C(BaseConstants):
     # minimum-duration and message-count gate before the chat page can be left
     MIN_CHAT_SECONDS = 180
     MIN_QUALIFYING_MESSAGES = 3
-    MIN_MESSAGE_WORDS = 6
+    MIN_MESSAGE_WORDS = 3
     GATE_NOTICE = "Please continue exploring the topic for a little longer before proceeding."
 
     SYS_CONTROL = _SYS_CONTROL
@@ -190,7 +190,7 @@ class chat(Page):
             botClass=botClass,
             cached_messages=cached_messages,
             condition=condition,
-            progress=global_progress(12),
+            progress=global_progress(11),
         )
 
     @staticmethod

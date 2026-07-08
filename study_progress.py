@@ -16,25 +16,24 @@ GLOBAL_PAGE_ORDER (app_sequence = ['intro', 'survey_pre', 'chat_simple',
   5  survey_pre/Trust
   6  survey_pre/VerificationBehavior
   7  survey_pre/GIHS
-  8  survey_pre/SIHS_pre
-  9  survey_pre/KnowledgeSufficiency
-  10 survey_pre/PriorAttitude
-  11 survey_pre/InteractionInstruction
-  12 chat_simple/chat              <- single live-chat page, fixed step
+  8  survey_pre/KnowledgeSufficiency
+  9  survey_pre/PriorAttitude
+  10 survey_pre/InteractionInstruction
+  11 chat_simple/chat              <- single live-chat page, fixed step
+  12 survey_post/KnowledgeSufficiencyPost
   13 survey_post/VerificationIntention
-  14 survey_post/KnowledgeSufficiencyPost
-  15 survey_post/Credibility
-  16 survey_post/PerceivedUncertainty
-  17 survey_post/PerceivedCompleteness
-  18 survey_post/PostAttitude
-  19 survey_post/SIHS
-  20 survey_post/GIHS_post
-  21 survey_post/AIPerception
-  22 survey_post/Naturality
-  23 outro/Debriefing
+  14 survey_post/Credibility
+  15 survey_post/PerceivedUncertainty
+  16 survey_post/PerceivedCompleteness
+  17 survey_post/PostAttitude
+  18 survey_post/SIHS
+  19 survey_post/GIHS_post
+  20 survey_post/AIPerception
+  21 survey_post/Naturality
+  22 outro/Debriefing
 """
 
-GLOBAL_TOTAL_PAGES = 23
+GLOBAL_TOTAL_PAGES = 22
 
 
 def global_progress(step):

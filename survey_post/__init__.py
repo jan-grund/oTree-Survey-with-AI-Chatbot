@@ -182,7 +182,7 @@ class Credibility(Page):
                    "somewhat well", "well", "very well"]
         choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 8)]
         return dict(
-            progress=global_progress(15),
+            progress=global_progress(14),
             content_intro="Please rate the answers you received from the AI chatbot.",
             scale_label="How well do the following adjectives describe the AI chatbot's answers?",
             questions=[
@@ -203,7 +203,7 @@ class PerceivedUncertainty(Page):
                    "fairly uncertain", "very uncertain", "extremely uncertain"]
         choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 8)]
         return dict(
-            progress=global_progress(16),
+            progress=global_progress(15),
             content_intro="We would like to know how you feel after the information you just received.",
             scale_label="Please select an answer for each question below.",
             questions=[
@@ -227,7 +227,7 @@ class KnowledgeSufficiencyPost(Page):
     @staticmethod
     def vars_for_template(player):
         return dict(
-            progress=global_progress(14),
+            progress=global_progress(12),
             content_intro="After your search, please answer the following two questions.",
             fillin_instruction="Please answer the following two questions using the slider.",
             questions=[
@@ -249,7 +249,7 @@ class PerceivedCompleteness(Page):
                    "somewhat agree", "agree", "strongly agree"]
         choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 8)]
         return dict(
-            progress=global_progress(17),
+            progress=global_progress(16),
             content_intro="Please rate how complete the AI's answers felt to you.",
             scale_label="Please indicate how much you agree with each of the following statements.",
             questions=[
@@ -275,7 +275,7 @@ class PostAttitude(Page):
         anchors = ["strongly disagree", "disagree", "slightly disagree",
                    "slightly agree", "agree", "strongly agree"]
         return dict(
-            progress=global_progress(18),
+            progress=global_progress(17),
             content_intro="After your search, we would like to know your current view on the topic.",
             scale_label="Please indicate how much you agree with the following statement.",
             questions=[
@@ -295,7 +295,7 @@ class SIHS(Page):
         anchors = ["not at all like me", "a little like me", "somewhat like me", "mostly like me", "very much like me"]
         choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 6)]
         return dict(
-            progress=global_progress(19),
+            progress=global_progress(18),
             content_intro="The following statements are about your personal views on the topic you just searched.",
             scale_label="Please indicate how much each statement applies to you.",
             questions=[
@@ -318,7 +318,7 @@ class GIHS_post(Page):
         anchors = ["not at all like me", "a little like me", "somewhat like me", "mostly like me", "very much like me"]
         choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 6)]
         return dict(
-            progress=global_progress(20),
+            progress=global_progress(19),
             content_intro="We have a few questions about how you feel at this moment.",
             scale_label="Please indicate how much each statement applies to you.",
             questions=[
@@ -354,7 +354,7 @@ class AIPerception(Page):
         anchors = ["strongly disagree", "disagree", "neither agree nor disagree", "agree", "strongly agree"]
         choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 6)]
         return dict(
-            progress=global_progress(21),
+            progress=global_progress(20),
             content_intro="Please share your impressions of the AI chatbot you just interacted with.",
             scale_label="Please indicate how much you agree with the following statements.",
             groups=[
@@ -397,7 +397,7 @@ class Naturality(Page):
         natural_anchors = ["very unnatural", "unnatural", "somewhat unnatural", "moderately natural",
                            "somewhat natural", "natural", "very natural"]
         return dict(
-            progress=global_progress(22),
+            progress=global_progress(21),
             content_intro="A few last questions about your experience with the chat interface.",
             scale_label='',
             questions=[
@@ -412,8 +412,8 @@ class Naturality(Page):
 
 
 page_sequence = [
-    VerificationIntention,
     KnowledgeSufficiencyPost,
+    VerificationIntention,
     Credibility,
     PerceivedUncertainty,
     PerceivedCompleteness,

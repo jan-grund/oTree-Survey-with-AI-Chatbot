@@ -24,7 +24,7 @@ let typingDate = 0;
             const strong = clone.querySelector('strong');
             if (strong) strong.remove();
             const words = clone.textContent.trim().split(/\s+/).filter(Boolean).length;
-            if (words >= 6) count++;
+            if (words >= 3) count++;
         });
         return count;
     }

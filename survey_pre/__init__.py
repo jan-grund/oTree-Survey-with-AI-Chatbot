@@ -116,18 +116,6 @@ class Player(BasePlayer):
         label="I like finding out new information that differs from what I already think is true.",
         choices=[1, 2, 3, 4, 5], widget=widgets.RadioSelectHorizontal)
 
-    # ── Specific Intellectual Humility Scale (SIHS), pre-interaction ──
-    # 1 = not at all like me, 5 = very much like me
-    sihs_pre_7 = models.IntegerField(
-        label="My views about social media bans today may someday turn out to be wrong.",
-        choices=[1, 2, 3, 4, 5], widget=widgets.RadioSelectHorizontal)
-    sihs_pre_8 = models.IntegerField(
-        label="When it comes to my views about social media bans I may be overlooking evidence.",
-        choices=[1, 2, 3, 4, 5], widget=widgets.RadioSelectHorizontal)
-    sihs_pre_9 = models.IntegerField(
-        label="My views about social media bans may change with additional evidence or information.",
-        choices=[1, 2, 3, 4, 5], widget=widgets.RadioSelectHorizontal)
-
     # ── Subjective Prior Knowledge and Sufficiency ──────
     # 0 = knowing nothing, 100 = knowing everything you could possibly know
     know_pre = models.IntegerField(
@@ -168,7 +156,7 @@ class Experience(Page):
 
     @staticmethod
     def vars_for_template(player):
-        anchors = ["never", "rarely", "occasionally", "sometimes", "often", "very often", "several times a day"]
+        anchors = ["never", "less than once a month", "monthly", "weekly", "several times a week", "daily", "several times a day"]
         choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 8)]
         return dict(
             progress=global_progress(4),
@@ -246,7 +234,7 @@ class GIHS(Page):
         choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 6)]
         return dict(
             progress=global_progress(7),
-            content_intro="The following statements describe different ways people think about their own views and beliefs.",
+            content_intro="The following statements are about how you generally deal with your own opinions and beliefs.",
             scale_label="Please indicate how much each statement applies to you.",
             questions=[
                 dict(name='gihs_1',
@@ -268,29 +256,6 @@ class GIHS(Page):
         )
 
 
-class SIHS_pre(Page):
-    form_model = 'player'
-    form_fields = ['sihs_pre_7', 'sihs_pre_8', 'sihs_pre_9']
-
-    @staticmethod
-    def vars_for_template(player):
-        anchors = ["not at all like me", "a little like me", "somewhat like me", "mostly like me", "very much like me"]
-        choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 6)]
-        return dict(
-            progress=global_progress(8),
-            content_intro="The following statements are about your personal views on social media bans.",
-            scale_label="Please indicate how much each statement applies to you.",
-            questions=[
-                dict(name='sihs_pre_7', label="My views about social media bans today may someday turn out to be wrong.",
-                     choices=choices),
-                dict(name='sihs_pre_8', label="When it comes to my views about social media bans I may be overlooking evidence.",
-                     choices=choices),
-                dict(name='sihs_pre_9', label="My views about social media bans may change with additional evidence or information.",
-                     choices=choices),
-            ],
-        )
-
-
 class KnowledgeSufficiency(Page):
     form_model = 'player'
     form_fields = ['know_pre', 'suff_pre']
@@ -298,7 +263,7 @@ class KnowledgeSufficiency(Page):
     @staticmethod
     def vars_for_template(player):
         return dict(
-            progress=global_progress(9),
+            progress=global_progress(8),
             content_intro="We have two quick questions about social media bans for children and adolescents under 16.",
             fillin_instruction="Please answer the following two questions using the slider.",
             questions=[
@@ -323,7 +288,7 @@ class PriorAttitude(Page):
         importance_anchors = ["not at all important", "slightly important", "somewhat important",
                               "moderately important", "fairly important", "very important", "extremely important"]
         return dict(
-            progress=global_progress(10),
+            progress=global_progress(9),
             content_intro="In the following, we focus on a current topic of debate: whether social media should be banned for children and adolescents under the age of 16. We would first like to know your opinion on this question.",
             scale_label="Please indicate how much you agree with the following statement, and how you feel about the topic.",
             questions=[
@@ -340,7 +305,7 @@ class PriorAttitude(Page):
 class InteractionInstruction(Page):
     @staticmethod
     def vars_for_template(player):
-        return dict(progress=global_progress(11))
+        return dict(progress=global_progress(10))
 
 
 page_sequence = [
@@ -349,7 +314,6 @@ page_sequence = [
     Trust,
     VerificationBehavior,
     GIHS,
-    SIHS_pre,
     KnowledgeSufficiency,
     PriorAttitude,
     InteractionInstruction,
