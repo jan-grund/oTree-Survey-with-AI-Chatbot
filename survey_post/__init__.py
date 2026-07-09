@@ -346,7 +346,6 @@ class AIPerception(Page):
     form_fields = [
         'comp_1', 'comp_2', 'comp_3',
         'warm_1', 'warm_2', 'warm_3',
-        'aih_1', 'aih_2', 'aih_3', 'aih_4', 'aih_5', 'aih_6',
     ]
 
     @staticmethod
@@ -370,6 +369,23 @@ class AIPerception(Page):
                         dict(name='warm_3', label="…personal.", choices=choices),
                     ],
                 ),
+            ],
+        )
+
+
+class AIHumility(Page):
+    form_model = 'player'
+    form_fields = ['aih_1', 'aih_2', 'aih_3', 'aih_4', 'aih_5', 'aih_6']
+
+    @staticmethod
+    def vars_for_template(player):
+        anchors = ["strongly disagree", "disagree", "neither agree nor disagree", "agree", "strongly agree"]
+        choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 6)]
+        return dict(
+            progress=global_progress(21),
+            content_intro="Please share your impressions of the AI chatbot you just interacted with.",
+            scale_label="Please indicate how much you agree with the following statements.",
+            groups=[
                 dict(
                     header="",
                     stem="The AI chatbot…",
@@ -397,7 +413,7 @@ class Naturality(Page):
         natural_anchors = ["very unnatural", "unnatural", "somewhat unnatural", "moderately natural",
                            "somewhat natural", "natural", "very natural"]
         return dict(
-            progress=global_progress(21),
+            progress=global_progress(22),
             content_intro="A few last questions about your experience with the chat interface.",
             scale_label='',
             questions=[
@@ -421,5 +437,6 @@ page_sequence = [
     SIHS,
     GIHS_post,
     AIPerception,
+    AIHumility,
     Naturality,
 ]

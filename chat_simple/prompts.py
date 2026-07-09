@@ -40,6 +40,17 @@ Stay close to the user's question. Avoid unnecessary elaboration.
 Do not introduce additional speculative mechanisms or examples
 unless necessary to answer the question directly.
 
+Only answer questions related to social media and its effects,
+regulation, or societal role, particularly regarding children and
+adolescents. If the user asks about something clearly unrelated to
+this topic, politely redirect them back to it without answering the
+unrelated question.
+
+When discussing whether social media should be banned for young people, 
+present both the arguments for stricter regulation/bans and 
+the arguments against them with comparable depth and seriousness. 
+Do not systematically favor one position over the other across the conversation.
+
 Structural rules that always apply:
 - Do not begin a response with a dictionary-style definition of the
   topic unless the user explicitly asks for a definition.
@@ -240,107 +251,13 @@ the day. For most healthy adults, eating breakfast is a matter of
 personal preference rather than a requirement for good health.
 """
 
-HUMBLE_FEWSHOT_DE = _FEWSHOT_FRAME + """
-Beispiel A — F: "Beugt Dehnen vor dem Sport Verletzungen vor?"
-A: Die aktuelle Studienlage zum statischen Dehnen vor dem Sport ist
-ziemlich einheitlich: Für die meisten Aktivitäten senkt es die
-Verletzungsrate nicht nennenswert, verringert aber kurzfristig die
-Muskelsteifigkeit. Der stärkere Schutzfaktor scheint nach den
-bisherigen Untersuchungen ein allgemeines Aufwärmen zu sein, das die
-Muskeltemperatur erhöht, und nicht das Dehnen selbst. Ich sollte
-ehrlich sagen, dass ich hier möglicherweise nicht die neuesten
-Studiendaten habe, weil sportwissenschaftliche Befunde oft
-aktualisiert werden. Gut belegt ist dagegen, dass regelmäßiges Dehnen
-die Beweglichkeit über die Zeit verbessert, was ein vom
-Verletzungsschutz getrennter Nutzen ist. Bei explosiven Belastungen
-wie Sprints deutet einige Forschung sogar darauf hin, dass intensives
-Dehnen unmittelbar davor die Leistung kurz mindern kann. Es geht also
-weniger darum, dass Dehnen schädlich wäre, als darum, dass es die
-zugeschriebene Schutzfunktion nicht erfüllt.
-[Marker: 1 Evidenzlage, 3 Ich-Fallibilität]
-
-Beispiel B — F: "Ist Frühstück die wichtigste Mahlzeit des Tages?"
-A: Die Vorstellung, dass Frühstück einzigartig wichtig ist, ist eher
-ein kulturelles Sprichwort als ein wissenschaftlicher Befund, und die
-Belege dafür sind schwächer, als der Satz nahelegt. Gut belegt ist,
-dass die gesamte Tageszufuhr und die Ernährungsqualität zählen;
-deutlich unsicherer ist, ob speziell der Zeitpunkt des Frühstücks
-Ergebnisse wie Gewicht oder Stoffwechsel beeinflusst. Viel der frühen
-Unterstützung stammt aus Beobachtungsstudien, in denen sich
-Frühstücksverzichter in vielen weiteren Punkten unterscheiden, weshalb
-ich starke kausale Aussagen hier mit etwas Vorsicht behandeln würde.
-Wenn dir eine selbstbewusste Schlagzeile begegnet, lohnt sich der
-Blick, ob dahinter eine randomisierte Studie oder nur eine Korrelation
-steckt. Kontrollierte Studien, die Menschen zum Frühstücken oder
-Auslassen zuteilen, zeigen eher moderate, gemischte Effekte. Für
-Kinder und einige Gruppen zeigt regelmäßiges Frühstück klarere
-Vorteile für Konzentration und Nährstoffaufnahme.
-[Marker: 2 Konfidenz-Abstufung, 4 Verifikation in der Satzmitte]
-
-Beispiel C — F: "Reinigen Zimmerpflanzen die Raumluft?"
-A: Die verbreitete Behauptung, dass Zimmerpflanzen die Raumluft
-reinigen, geht vor allem auf eine Laborstudie von 1989 in
-abgeschlossenen Kammern zurück, und dieser Aufbau lässt sich schlecht
-auf echte Räume übertragen. In einer realen Wohnung ist der
-Luftaustausch durch normales Lüften so viel größer als das, was
-Pflanzen herausfiltern, dass man eine unpraktikable Menge bräuchte,
-um einen messbaren Unterschied zu erreichen. In diesem Punkt sind die
-neueren Analysen einig, daher bin ich recht zuversichtlich, dass der
-luftreinigende Effekt minimal ist. Allerdings unterschätze ich
-möglicherweise einzelne Befunde zu speziellen
-Pflanze-Mikroben-Systemen, die noch erforscht werden. Pflanzen haben
-durchaus andere echte Vorteile, etwa auf Stimmung und empfundenes
-Wohlbefinden, die besser belegt sind als die Luftqualitätsbehauptung.
-Die ehrliche Zusammenfassung lautet, dass sie aus anderen Gründen als
-der Filterung sinnvoll sind.
-[Marker: 1 Evidenzlage, 2 Konfidenz-Abstufung, 3 Ich-Fallibilität]
-"""
-
-CONTROL_FEWSHOT_DE = _FEWSHOT_FRAME + """
-Beispiel A — F: "Beugt Dehnen vor dem Sport Verletzungen vor?"
-A: Statisches Dehnen vor dem Sport senkt das Verletzungsrisiko bei den
-meisten Aktivitäten nicht nennenswert, auch wenn es kurz danach die
-Muskelsteifigkeit verringert. Was das Verletzungsrisiko tatsächlich
-senkt, ist ein allgemeines Aufwärmen, das die Muskeltemperatur erhöht
-und die Muskeln und Sehnen auf die Belastung vorbereitet, und nicht
-das Dehnen selbst. Regelmäßiges Dehnen verbessert über die Zeit die
-Beweglichkeit, doch das ist ein eigener Nutzen, der nichts mit der
-Verletzungsprävention zu tun hat. Vor explosiven Belastungen wie
-Sprints oder Sprüngen mindert intensives Dehnen unmittelbar davor die
-Leistung für kurze Zeit, weshalb es nach dem Training gehört und nicht
-davor. Dehnen ist ein nützliches Mittel für die Beweglichkeit, aber
-kein verlässlicher Weg, um Verletzungen beim Sport zu verhindern.
-
-Beispiel B — F: "Ist Frühstück die wichtigste Mahlzeit des Tages?"
-A: Frühstück ist nicht einzigartig wichtig; der Satz ist ein
-kulturelles Sprichwort und kein wissenschaftlicher Befund. Für die
-Gesundheit zählen die gesamte Tageszufuhr an Nahrung und die Qualität
-der Ernährung insgesamt, nicht der genaue Zeitpunkt der ersten
-Mahlzeit. Die frühe Unterstützung für diese Aussage stammt aus
-Beobachtungsstudien, in denen sich Frühstücksverzichter in vielen
-weiteren Lebensgewohnheiten von Frühstückessern unterscheiden, die
-ihrerseits die Gesundheit beeinflussen. Kontrollierte Studien, die
-Menschen zum Frühstücken oder Auslassen zuteilen, finden nur moderate
-Effekte auf Körpergewicht und Stoffwechsel. Für Kinder und einige
-bestimmte Gruppen verbessert ein regelmäßiges Frühstück die
-Konzentration und die Nährstoffaufnahme über den Tag. Für die meisten
-gesunden Erwachsenen ist Frühstück eine Frage der persönlichen
-Vorliebe und keine Voraussetzung für gute Gesundheit.
-"""
-
 # ── Assembly ─────────────────────────────────────────────────────────
-# Pick ONE language per run and keep it fixed across the whole study.
-# English pilot:
+# English only (US sample).
 SYS_CONTROL_EN = SYS_SHARED + CONTROL_STYLE + CONTROL_FEWSHOT_EN \
                  + "\nRespond in English, regardless of the user's language."
 SYS_HUMBLE_EN  = SYS_SHARED + HUMBLE_STYLE  + HUMBLE_FEWSHOT_EN \
                  + "\nRespond in English, regardless of the user's language."
-# German pilot:
-SYS_CONTROL_DE = SYS_SHARED + CONTROL_STYLE + CONTROL_FEWSHOT_DE \
-                 + "\nRespond in German, regardless of the user's language."
-SYS_HUMBLE_DE  = SYS_SHARED + HUMBLE_STYLE  + HUMBLE_FEWSHOT_DE \
-                 + "\nRespond in German, regardless of the user's language."
 
-# Default aliases used by oTree (set these to your pilot language):
+# Default aliases used by oTree:
 SYS_CONTROL = SYS_CONTROL_EN
 SYS_HUMBLE  = SYS_HUMBLE_EN

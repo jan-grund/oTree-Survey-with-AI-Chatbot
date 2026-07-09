@@ -15,6 +15,9 @@ let typingDate = 0;
 
     // minimum number of user messages required before the participant may continue
     const MIN_USER_MESSAGES = 3;
+    // server-recorded chat start time (seconds since epoch) and minimum duration
+    const CHAT_STARTED_AT_MS = parseFloat(js_vars.chat_started_at) * 1000;
+    const MIN_CHAT_MS = js_vars.min_chat_seconds * 1000;
 
     function countUserMessages() {
         const msgs = document.querySelectorAll('#chatMessages .selfMsg');
@@ -29,10 +32,14 @@ let typingDate = 0;
         return count;
     }
 
+    function timeElapsedOk() {
+        return (Date.now() - CHAT_STARTED_AT_MS) >= MIN_CHAT_MS;
+    }
+
     function updateContinueState() {
         const continueBtn = document.getElementById('continueBtn');
         if (!continueBtn) return;
-        if (countUserMessages() >= MIN_USER_MESSAGES) {
+        if (countUserMessages() >= MIN_USER_MESSAGES && timeElapsedOk()) {
             continueBtn.classList.remove('is-disabled');
         } else {
             continueBtn.classList.add('is-disabled');
@@ -55,11 +62,20 @@ let typingDate = 0;
 
         updateContinueState();
 
+        // keep the button's visual state in sync with the elapsed-time gate,
+        // since time can pass without a new message ever being sent
+        const continueStateTimer = setInterval(function () {
+            updateContinueState();
+            if (timeElapsedOk() && countUserMessages() >= MIN_USER_MESSAGES) {
+                clearInterval(continueStateTimer);
+            }
+        }, 1000);
+
         const continueBtn = document.getElementById('continueBtn');
         const chatNotice = document.getElementById('chatNotice');
         if (continueBtn) {
             continueBtn.addEventListener('click', function () {
-                if (countUserMessages() < MIN_USER_MESSAGES) {
+                if (countUserMessages() < MIN_USER_MESSAGES || !timeElapsedOk()) {
                     if (chatNotice) chatNotice.classList.add('show');
                     return;
                 }

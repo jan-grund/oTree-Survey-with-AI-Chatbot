@@ -256,25 +256,6 @@ class GIHS(Page):
         )
 
 
-class KnowledgeSufficiency(Page):
-    form_model = 'player'
-    form_fields = ['know_pre', 'suff_pre']
-
-    @staticmethod
-    def vars_for_template(player):
-        return dict(
-            progress=global_progress(8),
-            content_intro="We have two quick questions about social media bans for children and adolescents under 16.",
-            fillin_instruction="Please answer the following two questions using the slider.",
-            questions=[
-                dict(name='know_pre',
-                     label="How much do you feel you know about social media bans for children and adolescents under 16?"),
-                dict(name='suff_pre',
-                     label="How much would you need to know about this topic to feel sufficiently informed?"),
-            ],
-        )
-
-
 class PriorAttitude(Page):
     form_model = 'player'
     form_fields = ['attitude', 'att_certainty', 'att_importance']
@@ -288,7 +269,7 @@ class PriorAttitude(Page):
         importance_anchors = ["not at all important", "slightly important", "somewhat important",
                               "moderately important", "fairly important", "very important", "extremely important"]
         return dict(
-            progress=global_progress(9),
+            progress=global_progress(8),
             content_intro="In the following, we focus on a current topic of debate: whether social media should be banned for children and adolescents under the age of 16. We would first like to know your opinion on this question.",
             scale_label="Please indicate how much you agree with the following statement, and how you feel about the topic.",
             questions=[
@@ -298,6 +279,25 @@ class PriorAttitude(Page):
                      choices=[dict(value=i, text=certainty_anchors[i - 1]) for i in range(1, 8)]),
                 dict(name='att_importance', label="How important is this topic to you personally?",
                      choices=[dict(value=i, text=importance_anchors[i - 1]) for i in range(1, 8)]),
+            ],
+        )
+
+
+class KnowledgeSufficiency(Page):
+    form_model = 'player'
+    form_fields = ['know_pre', 'suff_pre']
+
+    @staticmethod
+    def vars_for_template(player):
+        return dict(
+            progress=global_progress(9),
+            content_intro="Now, two quick questions on this topic.",
+            fillin_instruction="Please answer the following two questions using the slider.",
+            questions=[
+                dict(name='know_pre',
+                     label="How much do you feel you know about social media bans for children and adolescents under 16?"),
+                dict(name='suff_pre',
+                     label="How much would you need to know about this topic to feel sufficiently informed?"),
             ],
         )
 
@@ -314,7 +314,7 @@ page_sequence = [
     Trust,
     VerificationBehavior,
     GIHS,
-    KnowledgeSufficiency,
     PriorAttitude,
+    KnowledgeSufficiency,
     InteractionInstruction,
 ]

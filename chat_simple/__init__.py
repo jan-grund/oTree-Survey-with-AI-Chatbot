@@ -167,6 +167,8 @@ class chat(Page):
         return dict(
             typing_delay_ms=1000,
             min_typing_ms=2000,
+            chat_started_at=player.field_maybe_none('chatStartedAt'),
+            min_chat_seconds=C.MIN_CHAT_SECONDS,
         )
 
     @staticmethod
