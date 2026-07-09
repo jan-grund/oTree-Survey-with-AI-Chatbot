@@ -3,6 +3,7 @@
 <style>
 .qs-page{max-width:680px}
 .qs-instruction{font-size:1rem;line-height:1.6;margin-bottom:1.5rem}
+.qs-privacy-note{font-style:italic;font-size:.85rem;color:#666;line-height:1.5;margin-bottom:1.5rem}
 #start-btn.is-waiting{opacity:.6;cursor:not-allowed}
 .qs-start-hint{display:none;color:#555;font-size:.85rem;margin-top:.6rem}
 .qs-start-hint.show{display:block}
@@ -16,7 +17,13 @@
     the evidence fully supports it. Their certainty made you curious, so you decide to look into the
     topic yourself with the help of an AI assistant. You might, for example, ask about different
     aspects of the topic. Feel free to ask follow-up questions to get a fuller picture. Please spend
-    a few minutes exploring the topic. Click 'Start' to begin your conversation with the AI Assistant.
+    a few minutes exploring the topic.
+  </p>
+  <p class="qs-privacy-note">
+    <em>Please do not share any personal information (such as your name, address, or contact details) in the chat. Write only about the topic.</em>
+  </p>
+  <p class="qs-instruction">
+    Click 'Start' to begin your conversation with the AI Assistant.
   </p>
 
   <button type="button" id="start-btn" class="btn btn-primary btn-large is-waiting" aria-disabled="true">Start</button>

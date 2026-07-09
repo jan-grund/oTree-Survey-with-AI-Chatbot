@@ -196,7 +196,12 @@ let typingDate = 0;
                     </div>
                 `;
                 chatMessages.insertAdjacentHTML('beforeend', botHtml);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                // scroll so the TOP of the new message is visible, not its bottom,
+                // so the participant can start reading immediately
+                const newBotMsg = document.getElementById(botMsgId);
+                if (newBotMsg) {
+                    newBotMsg.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
 
             }, delay);
 
@@ -211,11 +216,6 @@ let typingDate = 0;
 
     {{ include '_progress.html' with percent=progress.percent }}
     <div class="chatHeader">AI Assistant</div>
-
-    <div class="instructionBox">
-        <p>Your relative or friend is convinced that banning social media for children and adolescents under the age of 16 is clearly the right thing to do. Ask the AI Assistant about it to inform yourself.</p>
-        <p>Please do not share any personal information (such as your name, address, or contact details) in the chat. Write only about the topic.</p>
-    </div>
 
     <div id="chatMessages" class="chatMessages">
         <div class="message sysMsg">
