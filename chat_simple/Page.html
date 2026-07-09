@@ -25,10 +25,16 @@
     }
 
     /* ── full-viewport chat shell ─────────────────────── */
+    /* top/height are driven by the visualViewport script below so the
+       header stays pinned to the actually-visible area (not the
+       keyboard-covered layout viewport) on mobile. */
 
     .chatWrapper {
         position: fixed;
-        inset: 0;
+        top: var(--vvOffsetTop, 0px);
+        left: 0;
+        right: 0;
+        height: var(--vvHeight, 100%);
         display: flex;
         flex-direction: column;
         background: #f7f7f8;
@@ -213,13 +219,16 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+
+    /* Continue button is absent from the layout (not just grayed out) until
+       both gating conditions are met, so it doesn't take up space early. */
+    .chatContinueRow .btn {
         margin-top: 12px;
     }
 
-    .chatContinueRow .btn[disabled],
     .chatContinueRow .btn.is-disabled {
-        opacity: .5;
-        cursor: not-allowed;
+        display: none;
     }
 
     .chatNotice {
@@ -289,4 +298,28 @@
 
 </style>
 
+{{ endblock }}
+
+{{ block app_scripts }}
+<script>
+// Keep the fixed chat shell (and its header) pinned to the actually-visible
+// area on mobile. Mobile browsers shrink/offset the visualViewport (rather
+// than just covering content) when the on-screen keyboard opens, which a
+// plain `position:fixed; inset:0` doesn't track — so we mirror the
+// visualViewport's offset/height into CSS custom properties consumed by
+// .chatWrapper above.
+(function () {
+    var vv = window.visualViewport;
+    if (!vv) return;
+
+    function updateViewportVars() {
+        document.documentElement.style.setProperty('--vvOffsetTop', vv.offsetTop + 'px');
+        document.documentElement.style.setProperty('--vvHeight', vv.height + 'px');
+    }
+
+    vv.addEventListener('resize', updateViewportVars);
+    vv.addEventListener('scroll', updateViewportVars);
+    updateViewportVars();
+})();
+</script>
 {{ endblock }}
