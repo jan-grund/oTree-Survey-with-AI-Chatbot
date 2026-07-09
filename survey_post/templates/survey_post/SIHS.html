@@ -26,6 +26,21 @@
   .scale-row{flex-direction:row;flex-wrap:nowrap;gap:.4rem}
   .scale-row label{flex:1 1 0;min-width:0;border-radius:8px;border-top-width:1.5px;justify-content:center;text-align:center;padding:.5rem .4rem}
 }
+
+/* ── mobile one-item-at-a-time step flow (below the 700px breakpoint only) ── */
+.q-step-counter,.q-step-nav{display:none}
+@media (max-width:699px){
+  .q-step-counter{display:block}
+  .q-step-nav{display:flex}
+  .q-step-nav .btn{flex:1 1 0}
+  .q-block{display:none}
+  .q-block.q-step-active{display:block}
+  .q-group{display:none}
+  .q-group.q-step-active{display:block}
+  #next-btn{display:none}
+  #next-btn.q-step-revealed{display:block}
+  .qs-page.q-step-done .q-step-counter,.qs-page.q-step-done .q-step-nav{display:none}
+}
 </style>
 
 <div class="qs-page">
@@ -34,7 +49,7 @@
   {{ if scale_label }}<p class="qs-fillin-instruction">{{ scale_label }}</p>{{ endif }}
 
   {{ for q in questions }}
-  <div class="q-block" data-field="{{ q.name }}">
+  <div class="q-block{{ if forloop.counter0 == 0 }} q-step-active{{ endif }}" data-field="{{ q.name }}">
     <p class="q-label">{{ q.label }}</p>
     <div class="scale-container">
       <div class="scale-row">
@@ -77,6 +92,109 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.q-block input[type=radio]').forEach(function (r) {
     r.addEventListener('change', function () { this.closest('.q-block').classList.remove('has-error'); });
   });
+});
+</script>
+
+<script>
+// Mobile-only (below 700px) one-item-at-a-time step flow. Purely presentational:
+// it never touches form fields/values, and the original full-page validation
+// above still runs unchanged when the real page-submit button is clicked.
+document.addEventListener('DOMContentLoaded', function () {
+  var form = document.querySelector('form');
+  if (!form) return;
+  var pageSubmitBtn = document.getElementById('next-btn');
+  var pageEl = document.querySelector('.qs-page');
+  if (!pageSubmitBtn || !pageEl) return;
+
+  var groupEls = Array.prototype.slice.call(document.querySelectorAll('.q-group'));
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.q-block'));
+  if (steps.length < 2) return;
+
+  var current = 0;
+
+  var counterEl = document.createElement('div');
+  counterEl.className = 'q-step-counter';
+  var navEl = document.createElement('div');
+  navEl.className = 'q-step-nav';
+  var backBtn = document.createElement('button');
+  backBtn.type = 'button';
+  backBtn.className = 'btn btn-outline-secondary btn-large';
+  backBtn.textContent = 'Back';
+  var stepNextBtn = document.createElement('button');
+  stepNextBtn.type = 'button';
+  stepNextBtn.className = 'btn btn-primary btn-large';
+  stepNextBtn.textContent = 'Next';
+  navEl.appendChild(backBtn);
+  navEl.appendChild(stepNextBtn);
+  pageSubmitBtn.parentNode.insertBefore(counterEl, pageSubmitBtn);
+  pageSubmitBtn.parentNode.insertBefore(navEl, pageSubmitBtn);
+
+  function isAnswered(block) {
+    var name = block.dataset.field;
+    if (!name) return true;
+    if (block.querySelector('input[type=radio][name="' + name + '"]:checked')) return true;
+    var slider = block.querySelector('input[type=range][name="' + name + '"]');
+    if (slider) return slider.dataset.touched === '1';
+    return false;
+  }
+
+  function groupOf(block) {
+    for (var i = 0; i < groupEls.length; i++) {
+      if (groupEls[i].contains(block)) return groupEls[i];
+    }
+    return null;
+  }
+
+  function setActive(el, active) { el.classList.toggle('q-step-active', active); }
+
+  function renderStep() {
+    groupEls.forEach(function (g) { setActive(g, false); });
+    steps.forEach(function (b) { setActive(b, false); });
+    var activeBlock = steps[current];
+    var activeGroup = groupOf(activeBlock);
+    if (activeGroup) setActive(activeGroup, true);
+    setActive(activeBlock, true);
+    counterEl.textContent = 'Question ' + (current + 1) + ' of ' + steps.length;
+    backBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
+  }
+
+  function goNext() {
+    var activeBlock = steps[current];
+    if (!isAnswered(activeBlock)) {
+      activeBlock.classList.add('has-error');
+      activeBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    activeBlock.classList.remove('has-error');
+    if (current === steps.length - 1) {
+      pageEl.classList.add('q-step-done');
+      pageSubmitBtn.classList.add('q-step-revealed');
+      pageSubmitBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    current += 1;
+    renderStep();
+    counterEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function goBack() {
+    if (current === 0) return;
+    current -= 1;
+    renderStep();
+    counterEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  stepNextBtn.addEventListener('click', goNext);
+  backBtn.addEventListener('click', goBack);
+
+  document.querySelectorAll('.q-block input[type=radio], .q-block input[type=range]').forEach(function (el) {
+    el.addEventListener('change', function () {
+      var b = el.closest('.q-block');
+      if (b) b.classList.remove('has-error');
+    });
+  });
+
+  renderStep();
 });
 </script>
 {{ endblock }}
