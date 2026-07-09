@@ -34,7 +34,7 @@
   {{ if scale_label }}<p class="qs-fillin-instruction">{{ scale_label }}</p>{{ endif }}
 
   {{ for q in questions }}
-  <div class="q-block" data-field="{{ q.name }}">
+  <div class="q-block" data-field="{{ q.name }}"{{ if forloop.counter0 > 0 }} style="display:none;"{{ endif }}>
     <p class="q-label">{{ q.label }}</p>
     <div class="scale-container">
       <div class="scale-row">
@@ -48,7 +48,7 @@
   </div>
   {{ endfor }}
 
-  <button type="button" id="next-btn" class="btn btn-primary btn-large">Next</button>
+  <button type="button" id="next-btn" class="btn btn-primary btn-large" disabled>Next</button>
 </div>
 
 <script>
@@ -57,13 +57,38 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!form) return;
   form.noValidate = true;
   var nextBtn = document.getElementById('next-btn');
+  var blocks = Array.prototype.slice.call(document.querySelectorAll('.q-block[data-field]'));
+
+  function checkedValue(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : null;
+  }
+
+  function updateNextBtn() {
+    if (!nextBtn) return;
+    nextBtn.disabled = !blocks.every(function (b) { return checkedValue(b.dataset.field); });
+  }
+
+  blocks.forEach(function (b, i) {
+    b.querySelectorAll('input[type=radio]').forEach(function (r) {
+      r.addEventListener('change', function () {
+        b.classList.remove('has-error');
+        var next = blocks[i + 1];
+        if (next && next.style.display === 'none') {
+          next.style.display = '';
+          next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        updateNextBtn();
+      });
+    });
+  });
+
   if (nextBtn) {
     nextBtn.addEventListener('click', function () {
-      var blocks = document.querySelectorAll('.q-block[data-field]');
       var firstErr = null;
       blocks.forEach(function (b) {
         var name = b.dataset.field;
-        if (!document.querySelector('input[name="' + name + '"]:checked')) {
+        if (!checkedValue(name)) {
           b.classList.add('has-error');
           if (!firstErr) firstErr = b;
         } else {
@@ -74,9 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
       form.requestSubmit ? form.requestSubmit() : form.submit();
     });
   }
-  document.querySelectorAll('.q-block input[type=radio]').forEach(function (r) {
-    r.addEventListener('change', function () { this.closest('.q-block').classList.remove('has-error'); });
-  });
 });
 </script>
 {{ endblock }}

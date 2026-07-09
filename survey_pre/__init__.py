@@ -127,7 +127,7 @@ class Player(BasePlayer):
 
     # ── Prior Attitude ───────────────────────────────────
     attitude = models.IntegerField(
-        label="Banning social media for children and adolescents under the age of 16 is the right thing to do.",
+        label="Social media should be banned for children and adolescents under the age of 16.",
         choices=[1, 2, 3, 4, 5, 6], widget=widgets.RadioSelectHorizontal)
     att_certainty = models.IntegerField(
         label="How certain are you of your opinion on this topic?",
@@ -273,7 +273,7 @@ class PriorAttitude(Page):
             content_intro="In the following, we focus on a current topic of debate: whether social media should be banned for children and adolescents under the age of 16. We would first like to know your opinion on this question.",
             scale_label="Please indicate how much you agree with the following statement, and how you feel about the topic.",
             questions=[
-                dict(name='attitude', label="Banning social media for children and adolescents under the age of 16 is the right thing to do.",
+                dict(name='attitude', label="Social media should be banned for children and adolescents under the age of 16.",
                      choices=[dict(value=i, text=attitude_anchors[i - 1]) for i in range(1, 7)]),
                 dict(name='att_certainty', label="How certain are you of your opinion on this topic?",
                      choices=[dict(value=i, text=certainty_anchors[i - 1]) for i in range(1, 8)]),
