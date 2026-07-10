@@ -199,8 +199,8 @@ class PerceivedUncertainty(Page):
 
     @staticmethod
     def vars_for_template(player):
-        anchors = ["not at all uncertain", "slightly uncertain", "somewhat uncertain", "moderately uncertain",
-                   "fairly uncertain", "very uncertain", "extremely uncertain"]
+        anchors = ["very certain", "certain", "somewhat certain", "neither certain nor uncertain",
+                   "somewhat uncertain", "uncertain", "very uncertain"]
         choices = [dict(value=i, text=anchors[i - 1]) for i in range(1, 8)]
         return dict(
             progress=global_progress(15),
