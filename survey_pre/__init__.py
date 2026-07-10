@@ -116,6 +116,13 @@ class Player(BasePlayer):
         label="I like finding out new information that differs from what I already think is true.",
         choices=[1, 2, 3, 4, 5], widget=widgets.RadioSelectHorizontal)
 
+    # ── Attention Check (instructed response) ───────────
+    # Correct response is 2 ("a little like me"). Not enforced; used for
+    # later data exclusion only.
+    attn_check = models.IntegerField(
+        label="To show that you are paying attention, please select 'a little like me' for this item.",
+        choices=[1, 2, 3, 4, 5], widget=widgets.RadioSelectHorizontal)
+
     # ── Subjective Prior Knowledge and Sufficiency ──────
     # 0 = knowing nothing, 100 = knowing everything you could possibly know
     know_pre = models.IntegerField(
@@ -226,7 +233,7 @@ class VerificationBehavior(Page):
 
 class GIHS(Page):
     form_model = 'player'
-    form_fields = ['gihs_1', 'gihs_2', 'gihs_3', 'gihs_4', 'gihs_5', 'gihs_6']
+    form_fields = ['gihs_1', 'gihs_2', 'gihs_3', 'gihs_4', 'gihs_5', 'gihs_6', 'attn_check']
 
     @staticmethod
     def vars_for_template(player):
@@ -251,6 +258,9 @@ class GIHS(Page):
                      choices=choices),
                 dict(name='gihs_6',
                      label="I like finding out new information that differs from what I already think is true.",
+                     choices=choices),
+                dict(name='attn_check',
+                     label="To show that you are paying attention, please select 'a little like me' for this item.",
                      choices=choices),
             ],
         )

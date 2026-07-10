@@ -148,6 +148,12 @@ class Player(BasePlayer):
         label="Banning social media for children and adolescents under the age of 16 is the right thing to do.",
         choices=[1, 2, 3, 4, 5, 6], widget=widgets.RadioSelectHorizontal)
 
+    # ── Self-Reported Data Quality ───────────────────────
+    data_quality = models.IntegerField(
+        label="In your honest opinion, should we use your data in our analyses? Your answer will not affect your compensation in any way — we simply want to know whether your responses can be used.",
+        choices=[[1, 'Yes, use my data'], [0, 'No, I was not sufficiently attentive']],
+        widget=widgets.RadioSelect)
+
 
 ########################################################
 # Pages                                                #
@@ -427,6 +433,25 @@ class Naturality(Page):
         )
 
 
+class DataQuality(Page):
+    form_model = 'player'
+    form_fields = ['data_quality']
+
+    @staticmethod
+    def vars_for_template(player):
+        return dict(
+            progress=global_progress(23),
+            questions=[
+                dict(name='data_quality',
+                     label="In your honest opinion, should we use your data in our analyses? Your answer will not affect your compensation in any way — we simply want to know whether your responses can be used.",
+                     choices=[
+                         dict(value=1, text='Yes, use my data'),
+                         dict(value=0, text='No, I was not sufficiently attentive'),
+                     ]),
+            ],
+        )
+
+
 page_sequence = [
     KnowledgeSufficiencyPost,
     VerificationIntention,
@@ -439,4 +464,5 @@ page_sequence = [
     AIPerception,
     AIHumility,
     Naturality,
+    DataQuality,
 ]

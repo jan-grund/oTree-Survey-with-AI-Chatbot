@@ -31,10 +31,11 @@ GLOBAL_PAGE_ORDER (app_sequence = ['intro', 'survey_pre', 'chat_simple',
   20 survey_post/AIPerception
   21 survey_post/AIHumility
   22 survey_post/Naturality
-  23 outro/Debriefing
+  23 survey_post/DataQuality
+  24 outro/Debriefing
 """
 
-GLOBAL_TOTAL_PAGES = 23
+GLOBAL_TOTAL_PAGES = 24
 
 
 def global_progress(step):

@@ -31,7 +31,7 @@ class Player(BasePlayer):
 class Debriefing(Page):
     @staticmethod
     def vars_for_template(player):
-        return dict(progress=global_progress(23))
+        return dict(progress=global_progress(24))
 
 
 page_sequence = [
