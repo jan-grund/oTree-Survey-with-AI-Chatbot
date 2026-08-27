@@ -1,135 +1,124 @@
-# oTree GPT 
+# oTree Survey with an Embedded AI Chat Task
 
-Update 10/6/2025: I have updated the repo to use [oTree's new 6.0 beta](https://otree.readthedocs.io/en/latest/misc/version_history.html) that allows for asynchronous live page API calls.
+An oTree application for online experiments that pair a questionnaire with a live
+conversation with an AI chatbot. Participants answer a first set of questions,
+then have an open-ended chat with a chatbot whose behaviour is set by the
+experimental condition, then answer a second set of questions. The chat is the
+experimental stimulus, not the object of study.
 
-This is a collection of templates for using large language model (LLM) agents in oTree behavioral experiments. I originally updated this repository from previous verstions to use the LiteLLM package as a simple way to allow for multiple LLM services. Unfortunately, I could not resolve some dependency conflicts with oTree, so I reverted back to using the OpenAI package. If you desire a different commercial service, let me know and I can help you implement it.
+The repository was written for one specific study, which is included in full and
+can serve as a template. That study — *From Epistemic Endpoint to Exemplar:
+Testing Humble AI as a Metacognitive Intervention* (master's thesis, University of
+Duisburg-Essen) — varied whether the chatbot expressed intellectual humility while
+keeping the content of its answers the same, and measured how that affected
+participants' own thinking. It was run with 563 participants recruited via
+Prolific.
 
-Since previous versions, I have also moved the chat processing to the server via live pages, which adds stability in saving all data to the database and allows for features like syncing across multiple human participants. Please feel free to leave any feedback or open an issue if you spot a problem.
+The chat itself builds on [clintmckenna/oTree_gpt](https://github.com/clintmckenna/oTree_gpt), from which this repository is forked. The questionnaires, the progress bar, the Prolific integration and the deployment setup are new.
 
-Here is a video I made on an earlier version of the software, which might be helpful: [https://www.youtube.com/watch?v=IY_U2GYyIeo](https://www.youtube.com/watch?v=IY_U2GYyIeo)
+## What is where
 
+```
+intro/            Welcome and consent
+survey_pre/       Questions asked before the chat
+chat_simple/      The chat task; prompts.py holds the condition prompts
+survey_post/      Questions asked after the chat
+outro/            Debriefing and return to the recruitment platform
+study_progress.py Controls the progress bar shown on every page
+```
 
-I am continuously working on adding more templates. Here is the current list, increasing by complexity:
-- [chat_simple](#chat_simple)
-- [chat_complex](#chat_complex)
-- [chat_voice](#chat_voice)
-- [dictator_game](#dictator_game)
-- [chat_multiple_agents](#chat_multiple_agents)
-- [chat_2humans1bot](#chat_2humans1bot)
-- [threejs](#threejs)
+All questionnaire items — wording, answer options, scale labels — are in the
+`__init__.py` file of each survey app. To adapt this to a different study, change
+the survey apps and `chat_simple/prompts.py`; the rest works independently of the
+topic.
 
-I will also include applications that are submitted by the community here:
-- [chat_japanese](#chat_japanese) (submitted by @lvzeyu)
-- [traffic_light](#traffic_light) (submitted by @lvzeyu)
+## The chat task
 
-## Applications
+Participants write freely; no fixed questions are given. What distinguishes the
+conditions is set entirely in `chat_simple/prompts.py`, which combines shared
+instructions with one of two style descriptions and matching example answers.
 
-### chat_simple
+Before participants can move on, they must spend at least three minutes on the
+page and send at least three messages. Neither requirement is shown to them, and
+reloading the page does not reset the timer. Model, response length and all three
+thresholds are set as constants at the top of `chat_simple/__init__.py`.
 
-This is a simple version of a chat task with a randomized LLM agent. The agent will be on of two personalities: Republican or Democrat. It also demonstrates how you can use randomized conditions to adjust things like CSS styles.
+## The included study
 
-<img src="./_static/chat_simple1.png" style="display: block;">
-<img src="./_static/chat_simple2.png" style="display: block;">
+Two groups, randomly assigned: one chatbot expressed intellectual humility, the
+other did not. Both gave comparable information; only the style differed. The
+topic was social media bans for children and adolescents under 16. The model was
+`gpt-4.1-mini`. Participants went through 24 pages in about 15 minutes.
 
-This app is useful if you only care about the text that is sent to and from the LLM agent and will not use more complex features.
+Assignment happens when the session is created and is a simple coin flip per
+participant, so the two groups end up roughly, not exactly, equal in size.
 
-### chat_complex
+## Setup
 
-This is a similar application that demonstrates how one can use sturctured output with the LLM response. This uses pydantic to validate the json schema for whatever variables you want passed to the LLM agent:
+Requires Python 3.11 and oTree 6.0.0b10.
 
-<img src="./_static/schema.png" style="display: block;">
+```bash
+git clone [TODO — repository URL]
+cd oTree_gpt
+pip install -r requirements.txt
+cp .env.example .env      # then insert your OpenAI key
+otree devserver
+```
 
-In this case, you can see that we have variables for tone, text, and reactions alongside the text information. This is all passed to and from the agent in a structured way.
+## Running it live
 
-And you can specify how the agent will use this information by piping it into the system prompt and future prompts:
+The study ran with Docker Compose on a single server behind nginx. Two settings
+are not optional, and both cost data if you get them wrong.
 
-<img src="./_static/complex1.png" style="display: block; width: 70%">
-<img src="./_static/complex2.png" style="display: block; width: 70%">
+**Start the app with `otree prodserver`, not `devserver`.** In this oTree version,
+`devserver` keeps the whole database in memory and only writes it to disk when the
+program shuts down cleanly. Inside a container that rarely happens, so a crash or
+an abrupt restart can wipe everything collected so far. `prodserver` saves as it
+goes.
 
-Additionally, this allows for more complex information to be stored, such as emoji reactions:
+**Keep the database file outside the container.** The volume line in
+`docker-compose.yml` does this. Without it, the database only exists inside the
+container and starts over empty on every rebuild. Create the file before the first
+start, otherwise Docker creates a folder with that name instead:
 
-<img src="./_static/chat_complex.gif" style="display: block;">
+```bash
+touch db.sqlite3
+docker compose up --build -d
+```
 
-Importantly, you will need to use a model that supports structured output for this app. More documentation about this can be found [here](https://docs.litellm.ai/docs/completion/json_mode).
+One more thing worth knowing: oTree cannot change the shape of an existing
+database. Once real participants have started, adding or renaming a question
+breaks the running study and you have to start with an empty database. Finish all
+changes to the questionnaires before you launch.
 
-### chat_voice
+## Known limitations
 
-This extends chat_complex to add voice chat functionality. It uses the Whisper API to transcribe audio from the user's microphone. It then uses the ElevenLabs API to generate a voice response. Audio can be saved either locally or on an Amazon S3 bucket. For security reasons, you should only use local saving if you are running an experiment locally in the lab. 
+**Too many participants at once.** The app handles one request at a time while
+waiting several seconds for each chatbot reply. When many people used it
+simultaneously, a large share of replies never arrived: of 590 participants who
+wrote at least one message, 227 got an answer. The failure rate followed how busy
+the study was — almost none when people arrived one at a time, 60 to 71 percent
+during the busiest hours. This was not caused by OpenAI limits or by running out
+of credit. Anyone reusing this for a live study should fix this first, by running
+several workers, by not making the app wait for the reply, or by switching to
+PostgreSQL, which is already prepared in `requirements.txt`.
 
-<img src="./_static/chat_voice.gif" style="display: block;">
-
-Using ElevenLabs, you can specify what voice id you would like the agent to use. You can also specify the tone of the voice by adding a prefix to the text. More information about the ElevenLabs API can be found [here](https://elevenlabs.io/docs/capabilities/text-to-speech).
-
-You can also save the user audio if desired to run further analyses on (e.g. paralinguistic features). As this is identifiable data, please use best security practices. You can explore the voices in ElevenLabs community [here](https://elevenlabs.io/app/voice-library).
-
-I should note that this app has not been tested for performance or scalability, so I would advise to not run too many subjects at once. Additionally, ElevenLabs can be expensive to run, so be mindful of how many credits you are using throughout your studies.
-
-### dictator_game
-
-This is a simple dictator game that uses the LLM agent to make decision about the participant. This demonstrates how you can integrate the agent's decision along side other python functions. Here, an integer representing the percentage liklihood the agent will trust the participant is taken into account when the agent forms a message, and will update this amount depending on what the participant says.
-
-<img src="./_static/dictator.gif" style="display: block;">
-<img src="./_static/dictator2.png" style="display: block;">
-
-### chat_multiple_agents
-
-In the previous experiments, the LLM agent message is triggered when the participant sends their own message. This experiment demonstrates how you can trigger a check every x seconds, allowing for more than one agent. In this case, we have a participant agent, acting as a debate partner, and a moderator agent, who will respond to the message history between the two. The participant agent responds to every participant message, but the moderator agent only responds to every 6th message.
-
-<img src="./_static/multi1.png" style="display: block; width: 60%">
-<img src="./_static/multi2.png" style="display: block; width: 60%">
-
-### chat_2humans1bot
-
-Similar to chat_multiple_agents, this experiment allows for two human players with one moderator agent.
-
-### threejs
-
-This experiment demonstrates how you can use three.js to create a 3D environment and surface LLM data based on behavior in the environment. Here, we demonstrate how the player character must solicit information from different agents to piece together details of a crime that had occurred.
-
-<img src="./_static/threejs.gif" style="display: block; width: 80%">
-
-In this example, the agent's conversation cue will only trigger when the participant character is close enough in a 3d space (10 units in this case). This template can be useful for games where participants must gather information from different sources to piece together information (e.g. jigsaw classroom). It may also be useful for testing agent based models of conversation behavior with humans interacting with NPCs.
-
-More information about three.js can be found [here](https://threejs.org/).
-
-
-## Community-Submitted Applications
-
-### chat_japanese
-##### submitted by @lvzeyu
-
-This is a translated version of the chat application into Japanese. It also includes a before and after questionnaire.
-
-### traffic_light
-##### submitted by @lvzeyu
-This is a version of the traffic light experiment that uses the LLM agent to make decisions about norm violations.
-
-## Experiment Settings
-
-Within each experiment, you can adjust the settings that are specified in the Constants model within __init__.py. You can adjust things like the system prompt, the LLM model, and the temperature. You can also specify API keys for either LLM services or other features you are plugging in, like transcription or Amazon S3 storage.
-
-If you are using this on Heroku, you can use this command to add API keys to your application as an environment variable:
-
----
-> <i>heroku config:add OPENAI_KEY=sk-.....</i>
----
-
-If using other APIs, like those demonstrated in chat_voice, you will need to do the same for ElevenLabs, Whisper API, and/or Amazon S3.
-
-## Data Output
-
-For the LLM data, I have set up logging using oTree's ExtraModel and custom export features. Any saved data can be accessed under the global "data" tab at the top of the admin page. More information about the oTree advanced features can be found [here](https://otree.readthedocs.io/en/latest/misc/advanced.html).
-
-## Package requirements
-
-When using locally or in production, you will also need to install the Python packages listed in requirements.txt.
+**Name of the API key setting.** The code looks for `OPENAI_KEY`. Set that one, as
+shown in `.env.example`.
 
 ## Citation
 
-As part of oTree's [installation agreement](https://otree.readthedocs.io/en/master/install.html), be sure to cite their paper: 
+If you use this software, please cite oTree and the repository it builds on:
 
-- Chen, D.L., Schonger, M., Wickens, C., 2016. oTree - An open-source platform for laboratory, online and field experiments. Journal of Behavioral and Experimental Finance, vol 9: 88-97.
+> Chen, D. L., Schonger, M., & Wickens, C. (2016). oTree — An open-source platform
+> for laboratory, online and field experiments. *Journal of Behavioral and
+> Experimental Finance, 9*, 88–97.
 
-If this app was helpful, you may consider citing this github repository as well.
+> McKenna, C. (2023). *oTree_gpt* [Computer software].
+> https://github.com/clintmckenna/oTree_gpt
 
-- McKenna, C., (2023). oTree GPT. https://github.com/clintmckenna/oTree_gpt
+For the study itself, please cite [TODO — thesis or paper reference].
+
+## License
+
+MIT, inherited from the original repository. See `LICENSE.txt`.

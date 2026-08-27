@@ -58,7 +58,5 @@ The aim of the study is to investigate whether and how such differences in the p
 
 If you have any questions about the study or would like to withdraw your participation afterward, you can contact the person responsible for the project at any time:
 
-Jan-Sebastian Grund (University of Duisburg-Essen), jan-sebastian.grund@stud.uni-due.de
-
 # 
 
