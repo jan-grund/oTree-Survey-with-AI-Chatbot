@@ -58,7 +58,7 @@ participant, so the two groups end up roughly, not exactly, equal in size.
 Requires Python 3.11 and oTree 6.0.0b10.
 
 ```bash
-git clone [TODO — repository URL]
+git clone https://github.com/jan-grund/oTree-Survey-with-AI-Chatbot
 cd oTree_gpt
 pip install -r requirements.txt
 cp .env.example .env      # then insert your OpenAI key
