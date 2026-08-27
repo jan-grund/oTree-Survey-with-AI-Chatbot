@@ -92,16 +92,10 @@ breaks the running study and you have to start with an empty database. Finish al
 changes to the questionnaires before you launch.
 
 ## Known limitations
+**Code Quality.** This fork was created with Claude Code. As a psychology and computer science student I reviewed the functionality but not every line of code.
 
-**Too many participants at once.** The app handles one request at a time while
-waiting several seconds for each chatbot reply. When many people used it
-simultaneously, a large share of replies never arrived: of 590 participants who
-wrote at least one message, 227 got an answer. The failure rate followed how busy
-the study was — almost none when people arrived one at a time, 60 to 71 percent
-during the busiest hours. This was not caused by OpenAI limits or by running out
-of credit. Anyone reusing this for a live study should fix this first, by running
-several workers, by not making the app wait for the reply, or by switching to
-PostgreSQL, which is already prepared in `requirements.txt`.
+**Many participants at once.** The app handles one request at a time while
+waiting several seconds for each chatbot reply. I recommend not exceeding 10 simultaneous active chatbot interactions.
 
 **Name of the API key setting.** The code looks for `OPENAI_KEY`. Set that one, as
 shown in `.env.example`.
@@ -113,6 +107,9 @@ If you use this software, please cite oTree and the repository it builds on:
 > Chen, D. L., Schonger, M., & Wickens, C. (2016). oTree — An open-source platform
 > for laboratory, online and field experiments. *Journal of Behavioral and
 > Experimental Finance, 9*, 88–97.
+
+> Grund, J.-S. (2026). *oTree-Survey-with-AI-Chatbot [Computer software].
+> https://github.com/jan-grund/oTree-Survey-with-AI-Chatbot
 
 > McKenna, C. (2023). *oTree_gpt* [Computer software].
 > https://github.com/clintmckenna/oTree_gpt
