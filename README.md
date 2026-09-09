@@ -114,8 +114,6 @@ If you use this software, please cite oTree and the repositories it builds on:
 > McKenna, C. (2023). *oTree_gpt* [Computer software].
 > https://github.com/clintmckenna/oTree_gpt
 
-For the study itself, please cite [TODO — thesis or paper reference].
-
 ## License
 
 MIT, inherited from the original repository. See `LICENSE.txt`.
