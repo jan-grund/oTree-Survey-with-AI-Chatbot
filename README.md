@@ -7,9 +7,9 @@ experimental condition, then answer a second set of questions. The chat is the
 experimental stimulus, not the object of study.
 
 The repository was written for one specific study, which is included in full and
-can serve as a template. That study — *From Epistemic Endpoint to Exemplar:
-Testing Humble AI as a Metacognitive Intervention* (master's thesis, University of
-Duisburg-Essen) — varied whether the chatbot expressed intellectual humility while
+can serve as a template. That study — *Humble Answers, Humbler Users?
+An Experiment on AI-mediated Intellectual Humility* (master's thesis, University of
+Duisburg-Essen)—varied whether the chatbot expressed intellectual humility while
 keeping the content of its answers the same, and measured how that affected
 participants' own thinking. It was run with 563 participants recruited via
 Prolific.
