@@ -108,7 +108,7 @@ If you use this software, please cite oTree and the repository it builds on:
 > for laboratory, online and field experiments. *Journal of Behavioral and
 > Experimental Finance, 9*, 88–97.
 
-> Grund, J.-S. (2026). *oTree-Survey-with-AI-Chatbot [Computer software].
+> Grund, J.-S. (2026). *oTree-Survey-with-AI-Chatbot* [Computer software].
 > https://github.com/jan-grund/oTree-Survey-with-AI-Chatbot
 
 > McKenna, C. (2023). *oTree_gpt* [Computer software].
