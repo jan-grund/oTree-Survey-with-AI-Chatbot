@@ -102,7 +102,7 @@ shown in `.env.example`.
 
 ## Citation
 
-If you use this software, please cite oTree and the repository it builds on:
+If you use this software, please cite oTree and the repositories it builds on:
 
 > Chen, D. L., Schonger, M., & Wickens, C. (2016). oTree — An open-source platform
 > for laboratory, online and field experiments. *Journal of Behavioral and
